@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Reolmarkedet.Core/Reolmarkedet.Core.csproj" />
+    <Project Path="Reolmarkedet.Data/Reolmarkedet.Data.csproj" />
+    <Project Path="Reolmarkedet.WPF/Reolmarkedet.WPF.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="ReolMarkedet.Tests/ReolMarkedet.Tests.csproj" />
+  </Folder>
+</Solution>
