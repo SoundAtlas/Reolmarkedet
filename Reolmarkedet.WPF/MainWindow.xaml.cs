@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Reolmarkedet.WPF.ViewModels;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +20,9 @@ namespace Reolmarkedet.WPF
         public MainWindow()
         {
             InitializeComponent();
+
+            MainViewModel mainViewModel = new MainViewModel();
+            DataContext = mainViewModel;
         }
     }
 }
