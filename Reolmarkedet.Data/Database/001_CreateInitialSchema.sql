@@ -1,4 +1,4 @@
-﻿USE deployment_test;
+﻿USE ReolmarkedetDB;
 GO
 
 SET XACT_ABORT ON;
