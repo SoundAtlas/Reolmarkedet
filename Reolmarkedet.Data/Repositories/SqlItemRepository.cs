@@ -20,10 +20,10 @@ namespace Reolmarkedet.Data.Repositories
 
         // Selects the item whose unique barcode matches the supplied SQL parameter.
         // @Barcode is a placeholder, its value is added to the command separately.
-        const string GetByBarcodeQuery = @"
+        private const string GetByBarcodeQuery = @"
             SELECT ItemID, Description, Price, Barcode, RentalID
             FROM dbo.ITEM
-            WHERE Barcode = @Barcode";
+            WHERE Barcode = @Barcode;";
 
         // Retrieves one item by barcode.
         // Returns null when the database contains no matching item.
@@ -34,7 +34,7 @@ namespace Reolmarkedet.Data.Repositories
 
             await using SqlCommand command = new(GetByBarcodeQuery, connection);
 
-            // Gives the SQL @Barcode placeholder the value received by this C# method paramter
+            // Gives the SQL @Barcode placeholder the value received by this C# method parameter
             // Sending it as a parameter prevents user input from becoming executable SQL.
             command.Parameters.Add("@Barcode", SqlDbType.NVarChar, 50).Value = barcode;
 

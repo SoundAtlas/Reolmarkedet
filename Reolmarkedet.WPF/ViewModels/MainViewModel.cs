@@ -1,11 +1,16 @@
-﻿using Reolmarkedet.WPF.Views;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Reolmarkedet.Core.Services;
+using Reolmarkedet.WPF.Views;
 
 namespace Reolmarkedet.WPF.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        private readonly SalesService _salesService;
+
+        public MainViewModel(SalesService salesService)
+        {
+            _salesService = salesService;
+
+        }
     }
 }

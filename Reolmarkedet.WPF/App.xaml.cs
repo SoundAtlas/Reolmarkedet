@@ -1,5 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
+using Reolmarkedet.Core.Interfaces;
+using Reolmarkedet.Core.Services;
 using Reolmarkedet.Data.Database;
+using Reolmarkedet.Data.Repositories;
+using Reolmarkedet.WPF.ViewModels;
 using System.Configuration;
 using System.Diagnostics;
 using System.Windows;
@@ -36,8 +40,14 @@ namespace Reolmarkedet.WPF
                 // Waits while the application tests the database connection
                 await tester.TestConnectionAsync();
 
+                // Creates the repositories and services using the configured connection string
+                IItemRepository itemRepository = new SqlItemRepository(connectionString);
+                ISaleRepository saleRepository = new SqlSaleRepository(connectionString);
+                SalesService salesService = new(itemRepository, saleRepository);
+                MainViewModel mainViewModel = new(salesService);
+
                 // Opens the main window after the database test succeeds
-                MainWindow mainWindow = new();
+                MainWindow mainWindow = new(mainViewModel);
                 mainWindow.Show();
             }
             catch (SqlException ex)
