@@ -4,7 +4,7 @@ namespace Reolmarkedet.Core.Interfaces
 {
     public interface IItemRepository
     {
-        // Checks if an item exists by barcode
+        // Gets an item by barcode, or returns null when it does not exist.
         Task<Item?> GetByBarcodeAsync(string barcode);
     }
 }
