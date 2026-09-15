@@ -20,7 +20,7 @@ namespace Reolmarkedet.Data.Database
             // Open the connection
             await connection.OpenAsync();
 
-            // Defines a simple query - returns 1 if the connection is successful
+            // Defines a simple query that ask the SQL server to return 1
             const string sql = "SELECT 1";
 
             // Creates a sql command 
