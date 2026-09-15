@@ -1,19 +1,59 @@
-﻿using Microsoft.Win32;
-using Reolmarkedet.Core.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//SalesService
+// Find items
+// Examine and store sales
 
-//SalesService
-//- Register a sale
-//-Check that the item exists
-//- Check that it hasn't already been sold
-//- Mark item as sold
-
+using Reolmarkedet.Core.Interfaces;
+using Reolmarkedet.Core.Models;
 
 namespace Reolmarkedet.Core.Services
 {
     public class SalesService
     {
+        private readonly IItemRepository _itemRepository;
+        private readonly ISaleRepository _saleRepository;
+
+        public SalesService(IItemRepository itemRepository, ISaleRepository saleRepository)
+        {
+            _itemRepository = itemRepository;
+            _saleRepository = saleRepository;
+        }
+
+        public async Task<int> RegisterSaleAsync(string barcode, decimal salePrice, DateOnly saleDate)
+        {
+            if (string.IsNullOrWhiteSpace(barcode))
+            {
+                throw new ArgumentException(
+                    "A barcode is required",
+                    nameof(barcode));
+            }
+
+            if (salePrice < 0)
+            {
+                throw new ArgumentException(
+                    "Sale price cannot be negative",
+                    nameof(salePrice));
+            }
+
+            Item? item = await _itemRepository.GetByBarcodeAsync(barcode) ?? throw new InvalidOperationException(
+                    $"No item found with barcode: {barcode}");
+
+            bool itemHasAlreadyBeenSold =
+                await _saleRepository.ExistsForItemAsync(item.ItemId);
+
+            if (itemHasAlreadyBeenSold)
+            {
+                throw new InvalidOperationException(
+                    $"Item with barcode {barcode} has already been sold.");
+            }
+
+            Sale sale = new()
+            {
+                SaleDate = saleDate,
+                SalePrice = salePrice,
+                ItemId = item.ItemId
+            };
+
+            return await _saleRepository.AddAsync(sale);
+        }
     }
 }
