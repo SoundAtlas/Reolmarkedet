@@ -19,6 +19,7 @@ namespace Reolmarkedet.WPF.ViewModels
         private string _shelfTypeMessage = string.Empty;
         private string _newShelfNumber = string.Empty;
         private string _shelfMessage = string.Empty;
+        private bool _showInactiveShelves;
         private ShelfRowViewModel? _selectedShelfRow;
         private ShelfStatusFilter _selectedStatusFilter = ShelfStatusFilter.All;
 
@@ -118,6 +119,20 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
+        public bool ShowInactiveShelves
+        {
+            get => _showInactiveShelves;
+            set
+            {
+                if (_showInactiveShelves != value)
+                {
+                    _showInactiveShelves = value;
+                    OnPropertyChanged();
+                    ApplyShelfFilter();
+                }
+            }
+        }
+
         public ShelfRowViewModel? SelectedShelfRow
         {
             get => _selectedShelfRow;
@@ -130,6 +145,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
                     DeleteShelfCommand.RaiseCanExecuteChanged();
                     DeactivateShelfCommand.RaiseCanExecuteChanged();
+                    ReactivateShelfCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -139,6 +155,7 @@ namespace Reolmarkedet.WPF.ViewModels
         public RelayCommand AddShelfCommand { get; }
         public RelayCommand DeleteShelfCommand { get; }
         public RelayCommand DeactivateShelfCommand { get; }
+        public RelayCommand ReactivateShelfCommand { get; }
 
         public ShelfViewModel(ObservableCollection<Rental> rentals)
         {
@@ -176,11 +193,36 @@ namespace Reolmarkedet.WPF.ViewModels
             AddShelfCommand = new RelayCommand(AddShelf, CanAddShelf);
             DeleteShelfCommand = new RelayCommand(DeleteShelf, CanDeleteShelf);
             DeactivateShelfCommand = new RelayCommand(DeactivateShelf, CanDeactivateShelf);
+            ReactivateShelfCommand = new RelayCommand(ReactivateShelf, CanReactivateShelf);
 
             // Refreshes the list of visible shelves whenever the Shelves or Rentals collections change
             Shelves.CollectionChanged += (_, _) => ApplyShelfFilter();
             Rentals.CollectionChanged += (_, _) => ApplyShelfFilter();
 
+            ApplyShelfFilter();
+        }
+
+        private bool CanReactivateShelf(object? parameter)
+        {
+            return SelectedShelfRow is not null &&
+                !SelectedShelfRow.Shelf.IsActive;
+        }
+
+        private void ReactivateShelf(object? parameter)
+        {
+            if (SelectedShelfRow is null)
+            {
+                return;
+            }
+
+            Shelf shelf = SelectedShelfRow.Shelf;
+            if (shelf.IsActive)
+            {
+                return;
+            }
+
+            shelf.IsActive = true;
+            ShelfMessage = string.Empty;
             ApplyShelfFilter();
         }
 
@@ -361,9 +403,13 @@ namespace Reolmarkedet.WPF.ViewModels
 
             foreach (var shelf in Shelves)
             {
-                if (!shelf.IsActive)
+                bool matchesActivity =
+                    (!ShowInactiveShelves && shelf.IsActive) ||
+                    (ShowInactiveShelves && !shelf.IsActive);
+
+                if (!matchesActivity)
                 {
-                    continue; // Skip inactive shelves
+                    continue; // Skip shelves that don't match the activity filter
                 }
 
                 var currentRental =
@@ -381,7 +427,7 @@ namespace Reolmarkedet.WPF.ViewModels
                      (SelectedStatusFilter == ShelfStatusFilter.TerminationPending &&
                      status == ShelfStatus.TerminationPending);
 
-                if (matchesFilter)
+                if (ShowInactiveShelves || matchesFilter)
                 {
                     VisibleShelves.Add(new ShelfRowViewModel(shelf, currentRental, status));
                 }

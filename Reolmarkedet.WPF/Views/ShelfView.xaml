@@ -95,6 +95,7 @@
                                Margin="0,8,0,0" />
                 </StackPanel>
             </Expander>
+
             <StackPanel Orientation="Horizontal">
 
                 <Button Content="Slet valgt reol"
@@ -108,12 +109,21 @@
                         HorizontalAlignment="Left"
                         Margin="0,0,0,12"
                         Padding="8,4" />
+
+                <Button Content="Genaktiver valgt reol"
+                        Command="{Binding ReactivateShelfCommand}"
+                        Margin="8,0,0,12"
+                        Padding="8,4" />
             </StackPanel>
 
             <TextBlock Text="{Binding ShelfMessage}"
                        Foreground="DarkRed"
                        TextWrapping="Wrap"
                        Margin="0,8,0,8" />
+
+            <CheckBox Content="Vis deaktiverede"
+                      IsChecked="{Binding ShowInactiveShelves, Mode=TwoWay}"
+                      Margin="0,0,0,8" />
 
             <StackPanel Orientation="Horizontal"
                         Margin="0,0,0,12">
@@ -126,6 +136,18 @@
                           VerticalAlignment="Center"
                           SelectedValuePath="Tag"
                           SelectedValue="{Binding SelectedStatusFilter, Mode=TwoWay}">
+
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowInactiveShelves}"
+                                             Value="True">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+
                     <ComboBoxItem Content="Alle"
                                   Tag="{x:Static vm:ShelfStatusFilter.All}" />
                     <ComboBoxItem Content="Ledige"
