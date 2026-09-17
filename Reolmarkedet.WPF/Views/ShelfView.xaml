@@ -24,7 +24,9 @@
                 <StackPanel Margin="0,8,0,0">
                     <TextBlock Text="Reolnummer" Margin="0,0,0,4" />
 
-                    <TextBox Width="100"
+                    <TextBox Width="260"
+                             Height="24"
+                             VerticalContentAlignment="Center"
                              HorizontalAlignment="Left"
                              Text="{Binding NewShelfNumber,
                              Mode=TwoWay,
@@ -97,10 +99,18 @@
                 </StackPanel>
             </Expander>
 
+            <Button Content="Slet valgt reol"
+                    Command="{Binding DeleteShelfCommand}"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,0,12"
+                    Padding="8,4" />
+
         </StackPanel>
 
 
         <DataGrid Grid.Row="2" ItemsSource="{Binding Shelves}"
+                  SelectedItem="{Binding SelectedShelf, Mode=TwoWay}"
+                  SelectionMode="Single" SelectionUnit="FullRow"
                   AutoGenerateColumns="False" IsReadOnly="True"
                   CanUserAddRows="False" CanUserDeleteRows="False">
             <DataGrid.Columns>

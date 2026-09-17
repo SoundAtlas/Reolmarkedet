@@ -7,7 +7,7 @@
         xmlns:views="clr-namespace:Reolmarkedet.WPF.Views"
         xmlns:vm="clr-namespace:Reolmarkedet.WPF.ViewModels"
         mc:Ignorable="d"
-        Title="Reolmarkedet" Height="450" Width="900"
+        Title="Reolmarkedet" Height="800" Width="1200"
         MinHeight="360" MinWidth="760">
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">

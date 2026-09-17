@@ -1,0 +1,29 @@
+using Reolmarkedet.Core.Models;
+using Reolmarkedet.WPF.ViewModels;
+
+namespace ReolMarkedet.Tests;
+
+[TestClass]
+public class ShelfViewModelTests
+{
+    [TestMethod]
+    public void DeleteShelfType_WhenTypeIsUsed_LeavesTypeUnchanged()
+    {
+        // Arrange
+        var viewModel = new ShelfViewModel();
+        ShelfType shelfType = viewModel.Shelves[1].ShelfType;
+
+        int originalCount = viewModel.ShelfTypes.Count;
+
+        viewModel.ShelfTypeToDelete = shelfType;
+
+        // Act
+        viewModel.DeleteShelfTypeCommand.Execute(null);
+
+        // Assert
+        Assert.HasCount(originalCount, viewModel.ShelfTypes);
+        Assert.Contains(shelfType, viewModel.ShelfTypes);
+        Assert.AreEqual(shelfType, viewModel.ShelfTypeToDelete);
+        Assert.IsFalse(string.IsNullOrWhiteSpace(viewModel.ShelfTypeMessage));
+    }
+}

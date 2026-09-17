@@ -15,6 +15,7 @@ namespace Reolmarkedet.WPF.ViewModels
         private string _shelfTypeMessage = string.Empty;
         private string _newShelfNumber = string.Empty;
         private string _shelfMessage = string.Empty;
+        private Shelf? _selectedShelf;
 
         public string NewShelfTypeName
         {
@@ -96,9 +97,25 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
+        public Shelf? SelectedShelf
+        {
+            get => _selectedShelf;
+            set
+            {
+                if (_selectedShelf != value)
+                {
+                    _selectedShelf = value;
+                    OnPropertyChanged();
+
+                    DeleteShelfCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
         public RelayCommand AddShelfTypeCommand { get; }
         public RelayCommand DeleteShelfTypeCommand { get; }
         public RelayCommand AddShelfCommand { get; }
+        public RelayCommand DeleteShelfCommand { get; }
 
         public ShelfViewModel()
         {
@@ -132,6 +149,23 @@ namespace Reolmarkedet.WPF.ViewModels
             AddShelfTypeCommand = new RelayCommand(AddShelfType, CanAddShelfType);
             DeleteShelfTypeCommand = new RelayCommand(DeleteShelfType, CanDeleteShelfType);
             AddShelfCommand = new RelayCommand(AddShelf, CanAddShelf);
+            DeleteShelfCommand = new RelayCommand(DeleteShelf, CanDeleteShelf);
+        }
+
+        private bool CanDeleteShelf(object? parameter)
+        {
+            return SelectedShelf is not null;
+        }
+
+        private void DeleteShelf(object? parameter)
+        {
+            if (SelectedShelf is null)
+            {
+                return;
+            }
+
+            Shelves.Remove(SelectedShelf);
+            SelectedShelf = null;
         }
 
         private bool CanAddShelf(object? parameter)
