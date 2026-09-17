@@ -155,5 +155,22 @@ namespace Reolmarkedet.Core.Services
 
             return false;
         }
+
+        public bool HasCurrentOrFutureRentalsForTenant(
+            Tenant tenant, DateTime date, IEnumerable<Rental> rentals)
+        {
+            foreach (var rental in rentals)
+            {
+                bool sameTenant = rental.Tenant.TenantId == tenant.TenantId;
+                bool hasNotEnded =
+                    rental.EndDate is null ||
+                    rental.EndDate.Value.Date >= date.Date;
+                if (sameTenant && hasNotEnded)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

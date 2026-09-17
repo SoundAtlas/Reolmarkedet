@@ -48,4 +48,109 @@ public class TenantViewModelTests
         Assert.IsNull(viewModel.SelectedTenant);
         Assert.IsEmpty(viewModel.Name);
     }
+
+    [TestMethod]
+    public void DeactivateTenant_WhenOnlyHistoricalRentalsExist_PreservesHistory()
+    {
+        // Arrange
+        var rentals = new ObservableCollection<Rental>();
+        var viewModel = new TenantViewModel(rentals);
+        viewModel.Name = "Test Tenant";
+        viewModel.AddTenantCommand.Execute(null);
+
+        Tenant tenant = viewModel.Tenants[0];
+        Shelf shelf = new(new ShelfType { Name = "Test Type" })
+        {
+            ShelfId = 1
+        };
+
+        Rental rental = new(tenant, shelf)
+        {
+            StartDate = new DateTime(2025, 1, 1),
+            EndDate = new DateTime(2025, 1, 31)
+        };
+
+        rentals.Add(rental);
+        viewModel.SelectedTenant = tenant;
+
+        // Act
+        viewModel.DeactivateTenantCommand.Execute(null);
+
+        // Assert
+        Assert.IsFalse(tenant.IsActive);
+        Assert.Contains(tenant, viewModel.Tenants);
+        Assert.Contains(rental, rentals);
+        Assert.IsNull(viewModel.SelectedTenant);
+        Assert.IsEmpty(viewModel.ValidationMessage);
+    }
+
+    [TestMethod]
+    public void DeactivateTenant_WhenCurrentRentalExists_LeavesTenantActive()
+    {
+        // Arrange
+        var rentals = new ObservableCollection<Rental>();
+        var viewModel = new TenantViewModel(rentals);
+        viewModel.Name = "Test Tenant";
+        viewModel.AddTenantCommand.Execute(null);
+
+        Tenant tenant = viewModel.Tenants[0];
+        Shelf shelf = new(new ShelfType { Name = "Test Type" })
+        {
+            ShelfId = 1
+        };
+
+        Rental rental = new(tenant, shelf)
+        {
+            StartDate = DateTime.Today.AddDays(-1),
+            EndDate = null
+        };
+
+        rentals.Add(rental);
+        viewModel.SelectedTenant = tenant;
+
+        // Act
+        viewModel.DeactivateTenantCommand.Execute(null);
+
+        // Assert
+        Assert.IsTrue(tenant.IsActive);
+        Assert.Contains(tenant, viewModel.Tenants);
+        Assert.Contains(rental, rentals);
+        Assert.AreSame(tenant, viewModel.SelectedTenant);
+        Assert.IsFalse(string.IsNullOrWhiteSpace(viewModel.ValidationMessage));
+    }
+
+    [TestMethod]
+    public void DeactivateTenant_WhenFutureRentalExists_LeavesTenantActive()
+    {
+        // Arrange
+        var rentals = new ObservableCollection<Rental>();
+        var viewModel = new TenantViewModel(rentals);
+        viewModel.Name = "Test Tenant";
+        viewModel.AddTenantCommand.Execute(null);
+
+        Tenant tenant = viewModel.Tenants[0];
+        Shelf shelf = new(new ShelfType { Name = "Test Type" })
+        {
+            ShelfId = 1
+        };
+
+        Rental rental = new(tenant, shelf)
+        {
+            StartDate = DateTime.Today.AddDays(1),
+            EndDate = null
+        };
+
+        rentals.Add(rental);
+        viewModel.SelectedTenant = tenant;
+
+        // Act
+        viewModel.DeactivateTenantCommand.Execute(null);
+
+        // Assert
+        Assert.IsTrue(tenant.IsActive);
+        Assert.Contains(tenant, viewModel.Tenants);
+        Assert.Contains(rental, rentals);
+        Assert.AreSame(tenant, viewModel.SelectedTenant);
+        Assert.IsFalse(string.IsNullOrWhiteSpace(viewModel.ValidationMessage));
+    }
 }

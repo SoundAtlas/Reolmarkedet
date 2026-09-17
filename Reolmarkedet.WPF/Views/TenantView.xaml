@@ -43,6 +43,13 @@
                         Padding="6" />
 
             </StackPanel>
+
+            <Button Content="Deaktiver lejer"
+                    Command="{Binding DeactivateTenantCommand}"
+                    HorizontalAlignment="Left"
+                    Padding="6"
+                    Margin="0,8,0,0" />
+
             <TextBlock Text="{Binding ValidationMessage}" Foreground="Firebrick"
                        TextWrapping="Wrap" Margin="0,12,0,0" />
         </StackPanel>
@@ -59,6 +66,10 @@
                 <TextBlock Text="Søg efter navn" />
                 <TextBox Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0,4,0,0" Padding="4" />
+
+                <CheckBox Content="Vis deaktiverede lejere"
+                          IsChecked="{Binding ShowInactiveTenants, Mode=TwoWay}"
+                          Margin="0,8,0,0" />
             </StackPanel>
             <DataGrid Grid.Row="2" ItemsSource="{Binding VisibleTenants}"
                       SelectedItem="{Binding SelectedTenant, Mode=TwoWay}"

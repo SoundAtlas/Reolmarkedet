@@ -203,8 +203,9 @@ namespace Reolmarkedet.WPF.ViewModels
                 return;
             }
 
-            bool hasCurrentOrFutureRentals = _rentalService.HasCurrentOrFutureRentalsForShelf(
-                shelf, DateTime.Today, Rentals);
+            bool hasCurrentOrFutureRentals =
+                _rentalService.HasCurrentOrFutureRentalsForShelf(
+                    shelf, DateTime.Today, Rentals);
 
             if (hasCurrentOrFutureRentals)
             {

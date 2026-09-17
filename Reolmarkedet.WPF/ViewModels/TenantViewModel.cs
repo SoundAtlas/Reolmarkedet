@@ -19,6 +19,9 @@ namespace Reolmarkedet.WPF.ViewModels
         private string _phoneNumber = string.Empty;
         private string _email = string.Empty;
         private Tenant? _selectedTenant;
+        private bool _showInactiveTenants;
+        private string _validationMessage = string.Empty;
+
 
         public string SearchText
         {
@@ -100,11 +103,26 @@ namespace Reolmarkedet.WPF.ViewModels
                     UpdateTenantCommand.RaiseCanExecuteChanged();
                     CancelUpdateTenantCommand.RaiseCanExecuteChanged();
                     DeleteTenantCommand.RaiseCanExecuteChanged();
+                    DeactivateTenantCommand.RaiseCanExecuteChanged();
                 }
             }
         }
 
-        private string _validationMessage = string.Empty;
+        public bool ShowInactiveTenants
+        {
+            get => _showInactiveTenants;
+            set
+            {
+                if (_showInactiveTenants != value)
+                {
+                    _showInactiveTenants = value;
+                    OnPropertyChanged();
+                    SelectedTenant = null; // Clear the selected tenant when toggling the filter
+                    ApplySearch();
+                }
+            }
+        }
+
         public string ValidationMessage
         {
             get => _validationMessage;
@@ -124,6 +142,7 @@ namespace Reolmarkedet.WPF.ViewModels
         public RelayCommand UpdateTenantCommand { get; }
         public RelayCommand CancelUpdateTenantCommand { get; }
         public RelayCommand DeleteTenantCommand { get; }
+        public RelayCommand DeactivateTenantCommand { get; }
 
         public TenantViewModel(ObservableCollection<Rental> rentals)
         {
@@ -132,6 +151,44 @@ namespace Reolmarkedet.WPF.ViewModels
             UpdateTenantCommand = new RelayCommand(UpdateTenant, CanUpdateTenant);
             CancelUpdateTenantCommand = new RelayCommand(CancelUpdateTenant, CanCancelUpdateTenant);
             DeleteTenantCommand = new RelayCommand(DeleteTenant, CanDeleteTenant);
+            DeactivateTenantCommand = new RelayCommand(DeactivateTenant, CanDeactivateTenant);
+        }
+
+        private bool CanDeactivateTenant(object? parameter)
+        {
+            return SelectedTenant is not null && SelectedTenant.IsActive;
+        }
+
+        private void DeactivateTenant(object? parameter)
+        {
+            if (SelectedTenant is null)
+            {
+                return;
+            }
+
+            Tenant tenant = SelectedTenant;
+
+            if (!tenant.IsActive)
+            {
+                return;
+            }
+
+            bool hasCurrentOrFutureRentals =
+                _rentalService.HasCurrentOrFutureRentalsForTenant(
+                    tenant, DateTime.Now, Rentals);
+
+            if (hasCurrentOrFutureRentals)
+            {
+                ValidationMessage =
+                    "Reollejeren har nuværende eller kommende lejemål og kan ikke deaktiveres.";
+                return;
+            }
+
+            tenant.IsActive = false;
+            SelectedTenant = null;
+            ValidationMessage = string.Empty;
+            ApplySearch();
+
         }
 
         private int _nextTenantId = 1;
@@ -247,8 +304,15 @@ namespace Reolmarkedet.WPF.ViewModels
             VisibleTenants.Clear();
             foreach (var tenant in Tenants)
             {
-                if (string.IsNullOrWhiteSpace(SearchText) ||
-                    tenant.Name.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase))
+                // Check if the tenant matches the active/inactive filter
+                bool matchesActivity =
+                    (!ShowInactiveTenants && tenant.IsActive) ||
+                    (ShowInactiveTenants && !tenant.IsActive);
+
+                if (matchesActivity &&
+                    (string.IsNullOrWhiteSpace(SearchText) ||
+                    tenant.Name.Contains(SearchText.Trim(),
+                        StringComparison.OrdinalIgnoreCase)))
                 {
                     VisibleTenants.Add(tenant);
                 }
