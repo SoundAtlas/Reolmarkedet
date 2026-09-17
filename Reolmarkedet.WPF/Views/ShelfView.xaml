@@ -16,28 +16,47 @@
         <TextBlock Grid.Row="0" Text="Reoler"
                    FontSize="24" Margin="0,0,0,16" />
 
-        <StackPanel Grid.Row="1" Margin="0,0,0,16">
-            <TextBlock Text="Reoltype for valgt reol" />
 
-            <ComboBox ItemsSource="{Binding ShelfTypes}"
-                      DisplayMemberPath="Name"
-                      SelectedItem="{Binding SelectedShelfType, Mode=TwoWay}"
-                      Width="260" HorizontalAlignment="Left"
-                      Margin="0,4,0,0" />
-        </StackPanel>
+        <Expander Grid.Row="1"
+                  Header="Tilføj ny reoltype"
+                  IsExpanded="False"
+                  Margin="0,0,0,12">
+
+            <StackPanel Margin="0,8,0,0">
+                <TextBox Width="260"
+                         Text="{Binding NewShelfTypeName,
+                         Mode=TwoWay,
+                         UpdateSourceTrigger=PropertyChanged}" />
+
+                <Button Content="Tilføj reoltype"
+                        Command="{Binding AddShelfTypeCommand}"
+                        Width="100"
+                        Margin="8,8,0,0"
+                        Padding="8,4" />
+            </StackPanel>
+        </Expander>
 
         <DataGrid Grid.Row="2" ItemsSource="{Binding Shelves}"
-                  SelectedItem="{Binding SelectedShelf, Mode=TwoWay}"
-                  SelectionMode="Single" SelectionUnit="FullRow"
                   AutoGenerateColumns="False" IsReadOnly="True"
                   CanUserAddRows="False" CanUserDeleteRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Reolnummer"
                                     Binding="{Binding ShelfNumber}"
                                     Width="120" />
-                <DataGridTextColumn Header="Reoltype"
-                                    Binding="{Binding ShelfType.Name}"
-                                    Width="*" />
+
+                <DataGridTemplateColumn Header="Reoltype" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox
+                                ItemsSource="{Binding DataContext.ShelfTypes,
+                                RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                DisplayMemberPath="Name"
+                                SelectedItem="{Binding ShelfType, Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

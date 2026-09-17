@@ -9,54 +9,36 @@ namespace Reolmarkedet.WPF.ViewModels
         public ObservableCollection<Shelf> Shelves { get; } = new();
         public ObservableCollection<ShelfType> ShelfTypes { get; } = new();
 
-        private Shelf? _selectedShelf;
-        private ShelfType? _selectedShelfType;
-
-        public Shelf? SelectedShelf
+        private string _newShelfTypeName = string.Empty;
+        public string NewShelfTypeName
         {
-            get => _selectedShelf;
+            get => _newShelfTypeName;
             set
             {
-                if (_selectedShelf != value)
+                if (_newShelfTypeName != value)
                 {
-                    _selectedShelf = value;
+                    _newShelfTypeName = value;
                     OnPropertyChanged();
-                    SelectedShelfType = _selectedShelf?.ShelfType;
+
+                    AddShelfTypeCommand.RaiseCanExecuteChanged();
                 }
             }
         }
 
-        public ShelfType? SelectedShelfType
-        {
-            get => _selectedShelfType;
-            set
-            {
-                if (_selectedShelfType != value)
-                {
-                    _selectedShelfType = value;
-                    OnPropertyChanged();
-                }
-
-                UpdateShelfCommand.RaiseCanExecuteChanged();
-                CancelUpdateShelfCommand.RaiseCanExecuteChanged();
-            }
-        }
-
-        public RelayCommand UpdateShelfCommand { get; }
-        public RelayCommand CancelUpdateShelfCommand { get; }
+        public RelayCommand AddShelfTypeCommand { get; }
 
         public ShelfViewModel()
         {
             ShelfType sixShelves = new()
             {
                 ShelfTypeId = 1,
-                Name = "Six Shelves"
+                Name = "6 hylder"
             };
 
             ShelfType threeShelvesWithClothesRail = new()
             {
                 ShelfTypeId = 2,
-                Name = "Three Shelves with Clothes Rail"
+                Name = "3 hylder og bøjlestang"
             };
 
             ShelfTypes.Add(sixShelves);
@@ -74,37 +56,34 @@ namespace Reolmarkedet.WPF.ViewModels
                 ShelfNumber = 2
             });
 
-            UpdateShelfCommand = new RelayCommand(UpdateShelf, CanUpdateShelf);
-            CancelUpdateShelfCommand = new RelayCommand(CancelUpdateShelf, CanCancelUpdateShelf);
+            AddShelfTypeCommand = new RelayCommand(AddShelfType, CanAddShelfType);
         }
 
-        private bool CanUpdateShelf(object? parameter)
+        private int _nextShelfTypeId = 3;
+        private void AddShelfType(object? parameter)
         {
-            return SelectedShelf is not null
-                && SelectedShelfType is not null
-                && SelectedShelfType != SelectedShelf.ShelfType;
-        }
-
-        private void UpdateShelf(object? parameter)
-        {
-            if (SelectedShelf is null || SelectedShelfType is null)
+            if (string.IsNullOrWhiteSpace(NewShelfTypeName))
             {
                 return;
             }
 
-            SelectedShelf.ShelfType = SelectedShelfType;
+            ShelfType shelfType = new ShelfType()
+            {
+                ShelfTypeId = _nextShelfTypeId,
+                Name = NewShelfTypeName.Trim()
+            };
 
-            SelectedShelf = null;
+            ShelfTypes.Add(shelfType);
+            _nextShelfTypeId++;
+            NewShelfTypeName = string.Empty;
         }
 
-        private bool CanCancelUpdateShelf(object? parameter)
+
+        private bool CanAddShelfType(object? parameter)
         {
-            return SelectedShelf is not null;
+            return !string.IsNullOrWhiteSpace(NewShelfTypeName);
         }
 
-        private void CancelUpdateShelf(object? parameter)
-        {
-            SelectedShelf = null;
-        }
+
     }
 }
