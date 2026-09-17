@@ -1,0 +1,247 @@
+﻿using Reolmarkedet.Core.Models;
+using Reolmarkedet.WPF.Commands;
+using Reolmarkedet.WPF.Views;
+using System.Collections.ObjectModel;
+
+namespace Reolmarkedet.WPF.ViewModels
+{
+    public class TenantViewModel : ViewModelBase
+    {
+        // Observable collection to hold the list of tenants
+        public ObservableCollection<Tenant> Tenants { get; } = new();
+        public ObservableCollection<Tenant> VisibleTenants { get; } = new();
+
+        private string _searchText = string.Empty;
+        private string _name = string.Empty;
+        private string _phoneNumber = string.Empty;
+        private string _email = string.Empty;
+        private Tenant? _selectedTenant;
+
+        public string SearchText
+        {
+            get { return _searchText; }
+            set
+            {
+                if (_searchText != value)
+                {
+                    _searchText = value;
+                    OnPropertyChanged();
+                    ApplySearch();
+                }
+            }
+        }
+
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                if (_name != value)
+                {
+                    _name = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string PhoneNumber
+        {
+            get { return _phoneNumber; }
+            set
+            {
+                if (_phoneNumber != value)
+                {
+                    _phoneNumber = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string Email
+        {
+            get { return _email; }
+            set
+            {
+                if (_email != value)
+                {
+                    _email = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public Tenant? SelectedTenant
+        {
+            get { return _selectedTenant; }
+            set
+            {
+                if (_selectedTenant != value)
+                {
+                    _selectedTenant = value;
+                    OnPropertyChanged();
+                    ValidationMessage = string.Empty; // Clear validation message when a tenant is selected
+
+                    if (_selectedTenant != null)
+                    {
+                        Name = _selectedTenant.Name;
+                        PhoneNumber = _selectedTenant.PhoneNumber ?? string.Empty;
+                        Email = _selectedTenant.Email ?? string.Empty;
+                    }
+                    else // Clear the form fields when no tenant is selected
+                    {
+                        ClearFormFields();
+                    }
+
+                    AddTenantCommand.RaiseCanExecuteChanged();
+                    UpdateTenantCommand.RaiseCanExecuteChanged();
+                    CancelUpdateTenantCommand.RaiseCanExecuteChanged();
+                    DeleteTenantCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        private string _validationMessage = string.Empty;
+        public string ValidationMessage
+        {
+            get
+            {
+                return _validationMessage;
+            }
+            set
+            {
+                if (_validationMessage != value)
+                {
+                    _validationMessage = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public RelayCommand AddTenantCommand { get; }
+        public RelayCommand UpdateTenantCommand { get; }
+        public RelayCommand CancelUpdateTenantCommand { get; }
+        public RelayCommand DeleteTenantCommand { get; }
+
+        public TenantViewModel()
+        {
+            AddTenantCommand = new RelayCommand(AddTenant, CanAddTenant);
+            UpdateTenantCommand = new RelayCommand(UpdateTenant, CanUpdateTenant);
+            CancelUpdateTenantCommand = new RelayCommand(CancelUpdateTenant, CanCancelUpdateTenant);
+            DeleteTenantCommand = new RelayCommand(DeleteTenant, CanDeleteTenant);
+        }
+
+        private int _nextTenantId = 1;
+
+        private bool CanAddTenant(object? parameter)
+        {
+            return SelectedTenant == null;
+        }
+        private void AddTenant(object? obj)
+        {
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                ValidationMessage = "Navn må ikke være tomt.";
+                return;
+            }
+
+            ValidationMessage = string.Empty;
+
+            Tenant tenant = new Tenant()
+            {
+                TenantId = _nextTenantId,
+                Name = Name,
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+            };
+
+            Tenants.Add(tenant);
+            ApplySearch();
+            _nextTenantId++;
+
+            SelectedTenant = null;
+            ClearFormFields();
+        }
+
+        private bool CanUpdateTenant(object? parameter)
+        {
+            return SelectedTenant != null;
+        }
+
+
+        private void UpdateTenant(object? parameter)
+        {
+            Tenant? tenant = SelectedTenant;
+            if (tenant is null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                ValidationMessage = "Navn må ikke være tomt.";
+                return;
+            }
+
+            ValidationMessage = string.Empty;
+
+            tenant.Name = Name;
+            tenant.PhoneNumber = string.IsNullOrWhiteSpace(PhoneNumber) ? null : PhoneNumber;
+            tenant.Email = string.IsNullOrWhiteSpace(Email) ? null : Email;
+
+            ApplySearch();
+            SelectedTenant = null;
+            ClearFormFields();
+        }
+
+        private bool CanCancelUpdateTenant(object? parameter)
+        {
+            return SelectedTenant != null;
+        }
+
+        private void CancelUpdateTenant(object? parameter)
+        {
+            SelectedTenant = null;
+            ClearFormFields();
+        }
+
+        private bool CanDeleteTenant(object? parameter)
+        {
+            return SelectedTenant != null;
+        }
+
+        private void DeleteTenant(object? parameter)
+        {
+            Tenant? tenant = SelectedTenant;
+            if (tenant == null)
+            {
+                return;
+            }
+
+            Tenants.Remove(tenant);
+            ApplySearch();
+            SelectedTenant = null;
+            ClearFormFields();
+        }
+
+        private void ClearFormFields()
+        {
+            Name = string.Empty;
+            PhoneNumber = string.Empty;
+            Email = string.Empty;
+            ValidationMessage = string.Empty;
+        }
+
+        private void ApplySearch()
+        {
+            VisibleTenants.Clear();
+            foreach (var tenant in Tenants)
+            {
+                if (string.IsNullOrWhiteSpace(SearchText) ||
+                    tenant.Name.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase))
+                {
+                    VisibleTenants.Add(tenant);
+                }
+            }
+        }
+    }
+}

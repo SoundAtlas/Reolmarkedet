@@ -5,8 +5,74 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Reolmarkedet.WPF"
         mc:Ignorable="d"
-        Title="Reolmarkedet" Height="450" Width="800">
-    <Grid>
+        Title="Reolmarkedet" Height="450" Width="900"
+        MinHeight="360" MinWidth="760">
+    <Grid Margin="16" DataContext="{Binding TenantManagement}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
+        <StackPanel Grid.Column="0">
+            <TextBlock Text="Reollejer" FontSize="20" Margin="0,0,0,16" />
+
+            <TextBlock Text="Navn" />
+            <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0,4,0,12" Padding="4" />
+
+            <TextBlock Text="Telefon (valgfrit)" />
+            <TextBox Text="{Binding PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0,4,0,12" Padding="4" />
+
+            <TextBlock Text="Email (valgfrit)" />
+            <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0,4,0,12" Padding="4" />
+
+            <StackPanel Orientation="Horizontal">
+
+                <Button Content="Opret" Command="{Binding AddTenantCommand}"
+                        Padding="6" Margin="0,0,6,0" />
+
+                <Button Content="Opdater" Command="{Binding UpdateTenantCommand}"
+                        Padding="6" Margin="0,0,6,0" />
+
+                <Button Content="Annuller" Command="{Binding CancelUpdateTenantCommand}"
+                        Padding="6" Margin="0,0,6,0"/>
+
+                <Button Content="Slet" Command="{Binding DeleteTenantCommand}"
+                        Padding="6" />
+
+            </StackPanel>
+            <TextBlock Text="{Binding ValidationMessage}" Foreground="Firebrick"
+                       TextWrapping="Wrap" Margin="0,12,0,0" />
+        </StackPanel>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Reollejere" FontSize="20" Margin="0,0,0,16" />
+            <StackPanel Grid.Row="1" Margin="0,0,0,12">
+                <TextBlock Text="Søg efter navn" />
+                <TextBox Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,4,0,0" Padding="4" />
+            </StackPanel>
+            <DataGrid Grid.Row="2" ItemsSource="{Binding VisibleTenants}"
+                      SelectedItem="{Binding SelectedTenant, Mode=TwoWay}"
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      CanUserAddRows="False" CanUserDeleteRows="False"
+                      SelectionMode="Single" SelectionUnit="FullRow">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding TenantId}" Width="50" />
+                    <DataGridTextColumn Header="Navn" Binding="{Binding Name}" Width="*" />
+                    <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="120" />
+                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </Grid>
 </Window>
