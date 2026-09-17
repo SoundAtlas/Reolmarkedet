@@ -16,6 +16,9 @@
         <DataTemplate DataType="{x:Type vm:TenantViewModel}">
             <views:TenantView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ShelfViewModel}">
+            <views:ShelfView/>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
@@ -24,6 +27,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <!-- Sidebar -->
         <StackPanel Grid.Column="0" Margin="12">
             <Button Content="Overblik"
                     Command="{Binding ShowDashboardCommand}"
@@ -31,7 +35,12 @@
 
             <Button Content="Reollejere"
                     Command="{Binding ShowTenantsCommand}"
+                    Padding="8" Margin="0,0,0,8"/>
+
+            <Button Content="Reolstyring"
+                    Command="{Binding ShowShelfManagementCommand}"
                     Padding="8" />
+
         </StackPanel>
 
         <ContentControl Grid.Column="1"
