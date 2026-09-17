@@ -104,6 +104,7 @@ namespace Reolmarkedet.WPF.ViewModels
                     CancelUpdateTenantCommand.RaiseCanExecuteChanged();
                     DeleteTenantCommand.RaiseCanExecuteChanged();
                     DeactivateTenantCommand.RaiseCanExecuteChanged();
+                    ReactivateTenantCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -143,6 +144,7 @@ namespace Reolmarkedet.WPF.ViewModels
         public RelayCommand CancelUpdateTenantCommand { get; }
         public RelayCommand DeleteTenantCommand { get; }
         public RelayCommand DeactivateTenantCommand { get; }
+        public RelayCommand ReactivateTenantCommand { get; }
 
         public TenantViewModel(ObservableCollection<Rental> rentals)
         {
@@ -152,7 +154,34 @@ namespace Reolmarkedet.WPF.ViewModels
             CancelUpdateTenantCommand = new RelayCommand(CancelUpdateTenant, CanCancelUpdateTenant);
             DeleteTenantCommand = new RelayCommand(DeleteTenant, CanDeleteTenant);
             DeactivateTenantCommand = new RelayCommand(DeactivateTenant, CanDeactivateTenant);
+            ReactivateTenantCommand = new RelayCommand(ReactivateTenant, CanReactivateTenant);
         }
+
+        private bool CanReactivateTenant(object? parameter)
+        {
+            return SelectedTenant is not null && !SelectedTenant.IsActive;
+        }
+
+        private void ReactivateTenant(object? obj)
+        {
+            if (SelectedTenant is null)
+            {
+                return;
+            }
+
+            Tenant tenant = SelectedTenant;
+
+            if (tenant.IsActive)
+            {
+                return;
+            }
+
+            tenant.IsActive = true;
+            SelectedTenant = null;
+            ValidationMessage = string.Empty;
+            ApplySearch();
+        }
+
 
         private bool CanDeactivateTenant(object? parameter)
         {

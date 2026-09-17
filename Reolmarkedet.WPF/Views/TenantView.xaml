@@ -44,11 +44,19 @@
 
             </StackPanel>
 
-            <Button Content="Deaktiver lejer"
-                    Command="{Binding DeactivateTenantCommand}"
-                    HorizontalAlignment="Left"
-                    Padding="6"
-                    Margin="0,8,0,0" />
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Deaktiver lejer"
+                        Command="{Binding DeactivateTenantCommand}"
+                        HorizontalAlignment="Left"
+                        Padding="6"
+                        Margin="0,8,6,0" />
+
+                <Button Content="Reaktiver lejer"
+                        Command="{Binding ReactivateTenantCommand}"
+                        HorizontalAlignment="Left"
+                        Padding="6"
+                        Margin="0,8,0,0" />
+            </StackPanel>
 
             <TextBlock Text="{Binding ValidationMessage}" Foreground="Firebrick"
                        TextWrapping="Wrap" Margin="0,12,0,0" />
