@@ -153,4 +153,49 @@ public class TenantViewModelTests
         Assert.AreSame(tenant, viewModel.SelectedTenant);
         Assert.IsFalse(string.IsNullOrWhiteSpace(viewModel.ValidationMessage));
     }
+
+    [TestMethod]
+    public void ReactivateTenant_WhenInactive_RestoresSameTenantAndPreservesHistory()
+    {
+        // Arrange
+        var rentals = new ObservableCollection<Rental>();
+        var viewModel = new TenantViewModel(rentals);
+        viewModel.Name = "Test Tenant";
+        viewModel.AddTenantCommand.Execute(null);
+
+        Tenant tenant = viewModel.Tenants[0];
+        Shelf shelf = new(new ShelfType { Name = "Test Type" })
+        {
+            ShelfId = 1
+        };
+
+        Rental rental = new(tenant, shelf)
+        {
+            StartDate = new DateTime(2025, 1, 1),
+            EndDate = new DateTime(2025, 1, 31)
+        };
+
+        rentals.Add(rental);
+        tenant.IsActive = false;
+        viewModel.ShowInactiveTenants = true;
+        viewModel.SelectedTenant = viewModel.VisibleTenants[0];
+
+        // Act
+        viewModel.ReactivateTenantCommand.Execute(null);
+
+        // Assert
+        Assert.IsTrue(tenant.IsActive);
+        Assert.HasCount(1, viewModel.Tenants);
+        Assert.Contains(tenant, viewModel.Tenants);
+        Assert.Contains(rental, rentals);
+        Assert.AreSame(tenant, rental.Tenant);
+        Assert.IsEmpty(viewModel.VisibleTenants);
+        Assert.IsNull(viewModel.SelectedTenant);
+        Assert.IsEmpty(viewModel.ValidationMessage);
+
+        // Return to the active list
+        viewModel.ShowInactiveTenants = false;
+        Assert.HasCount(1, viewModel.VisibleTenants);
+        Assert.AreSame(tenant, viewModel.VisibleTenants[0]);
+    }
 }

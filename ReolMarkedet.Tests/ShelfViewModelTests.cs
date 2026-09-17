@@ -181,4 +181,63 @@ public class ShelfViewModelTests
         Assert.AreSame(row, viewModel.SelectedShelfRow);
         Assert.IsFalse(string.IsNullOrWhiteSpace(viewModel.ShelfMessage));
     }
+
+    [TestMethod]
+    public void ReactivateShelf_WhenInactive_RestoresSameShelfAndPreservesHistory()
+    {
+        // Arrange
+        var rentals = new ObservableCollection<Rental>();
+        var viewModel = new ShelfViewModel(rentals);
+        Shelf shelf = viewModel.Shelves[0];
+        int originalCount = viewModel.Shelves.Count;
+        Tenant tenant = new() { TenantId = 1, Name = "Test Tenant" };
+
+        Rental rental = new(tenant, shelf)
+        {
+            StartDate = new DateTime(2025, 1, 1),
+            EndDate = new DateTime(2025, 1, 31)
+        };
+
+        rentals.Add(rental);
+        shelf.IsActive = false;
+        viewModel.ShowInactiveShelves = true;
+        viewModel.SelectedShelfRow = viewModel.VisibleShelves[0];
+
+        // Act
+        viewModel.ReactivateShelfCommand.Execute(null);
+
+        // Assert
+        Assert.IsTrue(shelf.IsActive);
+        Assert.HasCount(originalCount, viewModel.Shelves);
+        Assert.Contains(shelf, viewModel.Shelves);
+        Assert.Contains(rental, rentals);
+        Assert.AreSame(shelf, rental.Shelf);
+        Assert.IsEmpty(viewModel.VisibleShelves);
+        Assert.IsNull(viewModel.SelectedShelfRow);
+        Assert.IsEmpty(viewModel.ShelfMessage);
+
+        // Return to the active list; the default status filter is All
+        viewModel.ShowInactiveShelves = false;
+        Assert.HasCount(originalCount, viewModel.VisibleShelves);
+        Assert.AreSame(shelf, viewModel.VisibleShelves[0].Shelf);
+    }
+
+    [TestMethod]
+    public void ShowInactiveShelves_WhenStatusFilterIsRented_ShowsOnlyInactiveShelves()
+    {
+        // Arrange
+        var viewModel = new ShelfViewModel(new ObservableCollection<Rental>());
+        Shelf inactiveShelf = viewModel.Shelves[0];
+        inactiveShelf.IsActive = false;
+        viewModel.SelectedStatusFilter = ShelfStatusFilter.Rented;
+
+        // Act
+        viewModel.ShowInactiveShelves = true;
+
+        // Assert
+        Assert.HasCount(1, viewModel.VisibleShelves);
+        Assert.AreSame(inactiveShelf, viewModel.VisibleShelves[0].Shelf);
+        Assert.IsFalse(inactiveShelf.IsActive);
+        Assert.IsNull(viewModel.SelectedShelfRow);
+    }
 }
