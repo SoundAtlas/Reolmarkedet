@@ -26,4 +26,24 @@ public class ShelfViewModelTests
         Assert.AreEqual(shelfType, viewModel.ShelfTypeToDelete);
         Assert.IsFalse(string.IsNullOrWhiteSpace(viewModel.ShelfTypeMessage));
     }
+
+    [TestMethod]
+    public void AddShelf_WhenNumberAlreadyExists_DoesNotAddShelf()
+    {
+        // Arrange
+        var viewModel = new ShelfViewModel();
+
+        int originalCount = viewModel.Shelves.Count();
+
+        viewModel.NewShelfNumber = "1";
+        viewModel.NewShelfType = viewModel.ShelfTypes[0];
+
+        // Act
+        viewModel.AddShelfCommand.Execute(null);
+
+        // Assert
+        Assert.HasCount(originalCount, viewModel.Shelves);
+        Assert.IsFalse(string.IsNullOrWhiteSpace(viewModel.ShelfMessage));
+        Assert.AreEqual("1", viewModel.NewShelfNumber);
+    }
 }
