@@ -79,6 +79,7 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _selectedTenant = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(FormTitle)); // Notify that FormTitle has changed
                     ValidationMessage = string.Empty; // Clear validation message when a tenant is selected
 
                     if (_selectedTenant != null)
@@ -116,6 +117,8 @@ namespace Reolmarkedet.WPF.ViewModels
                 }
             }
         }
+
+        public string FormTitle => SelectedTenant is null ? "Opret reollejer" : $"Rediger: {SelectedTenant.Name}";
 
         public RelayCommand AddTenantCommand { get; }
         public RelayCommand UpdateTenantCommand { get; }
@@ -178,7 +181,8 @@ namespace Reolmarkedet.WPF.ViewModels
 
             if (string.IsNullOrWhiteSpace(Name))
             {
-                ValidationMessage = "Navn må ikke være tomt.";
+                ValidationMessage =
+                    "Navn må ikke være tomt. Angiv et navn, eller annuller redigeringen.";
                 return;
             }
 

@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0">
-            <TextBlock Text="Reollejer" FontSize="20" Margin="0,0,0,16" />
+            <TextBlock Text="{Binding FormTitle}" FontSize="20" Margin="0,0,0,16" />
 
             <TextBlock Text="Navn" />
             <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
