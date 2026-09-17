@@ -1,5 +1,6 @@
 using Reolmarkedet.Core.Models;
 using Reolmarkedet.WPF.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace ReolMarkedet.Tests;
 
@@ -10,7 +11,7 @@ public class ShelfViewModelTests
     public void DeleteShelfType_WhenTypeIsUsed_LeavesTypeUnchanged()
     {
         // Arrange
-        var viewModel = new ShelfViewModel();
+        var viewModel = new ShelfViewModel(new ObservableCollection<Rental>());
         ShelfType shelfType = viewModel.Shelves[1].ShelfType;
 
         int originalCount = viewModel.ShelfTypes.Count;
@@ -31,7 +32,7 @@ public class ShelfViewModelTests
     public void AddShelf_WhenNumberAlreadyExists_DoesNotAddShelf()
     {
         // Arrange
-        var viewModel = new ShelfViewModel();
+        var viewModel = new ShelfViewModel(new ObservableCollection<Rental>());
 
         int originalCount = viewModel.Shelves.Count();
 

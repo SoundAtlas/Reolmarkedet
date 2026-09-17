@@ -59,5 +59,50 @@ namespace Reolmarkedet.Core.Services
             // Every rental was checked and none blocked the requested period
             return true;
         }
+
+        public Rental? GetCurrentRentalByShelfAndDate(
+            Shelf shelf,
+            DateTime date,
+            IEnumerable<Rental> rentals)
+        {
+            DateTime day = date.Date;
+
+            foreach (var rental in rentals)
+            {
+                bool sameShelf = rental.Shelf.ShelfId == shelf.ShelfId;
+                bool hasStarted = rental.StartDate.Date <= day;
+                bool hasNotEnded = rental.EndDate?.Date >= day ||
+                    rental.EndDate is null;
+
+                if (sameShelf && hasStarted && hasNotEnded)
+                {
+                    return rental;
+                }
+            }
+
+            return null;
+        }
+
+        public ShelfStatus GetShelfStatus(
+            Shelf shelf,
+            DateTime date,
+            IEnumerable<Rental> rentals)
+        {
+            var currentRental = GetCurrentRentalByShelfAndDate(shelf, date, rentals);
+
+            if (currentRental is null)
+            {
+                return ShelfStatus.Available;
+            }
+            else if (currentRental.TerminationNoticeDate is not null &&
+                     currentRental.TerminationNoticeDate.Value.Date <= date.Date)
+            {
+                return ShelfStatus.TerminationPending;
+            }
+            else
+            {
+                return ShelfStatus.Rented;
+            }
+        }
     }
 }

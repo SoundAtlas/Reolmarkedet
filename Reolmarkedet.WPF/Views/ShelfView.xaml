@@ -18,6 +18,10 @@
 
         <StackPanel Grid.Row="1">
 
+            <CheckBox Content="Vis kun reoler ledige i dag"
+                      IsChecked="{Binding ShowOnlyAvailableShelves, Mode=TwoWay}"
+                      Margin="0,0,0,12" />
+
             <Expander Header="Tilføj reol"
                       IsExpanded="False"
                       Margin="0,0,0,12">
@@ -108,8 +112,8 @@
         </StackPanel>
 
 
-        <DataGrid Grid.Row="2" ItemsSource="{Binding Shelves}"
-                  SelectedItem="{Binding SelectedShelf, Mode=TwoWay}"
+        <DataGrid Grid.Row="2" ItemsSource="{Binding VisibleShelves}"
+                  SelectedItem="{Binding SelectedShelfRow, Mode=TwoWay}"
                   SelectionMode="Single" SelectionUnit="FullRow"
                   AutoGenerateColumns="False" IsReadOnly="True"
                   CanUserAddRows="False" CanUserDeleteRows="False">
@@ -125,11 +129,15 @@
                                 ItemsSource="{Binding DataContext.ShelfTypes,
                                 RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                 DisplayMemberPath="Name"
-                                SelectedItem="{Binding ShelfType, Mode=TwoWay,
+                                SelectedItem="{Binding ShelfType, Mode=OneWay,
                                 UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+
+                <DataGridTextColumn Header="Status"
+                                    Binding="{Binding ShelfStatus}"
+                                    Width="160" />
 
             </DataGrid.Columns>
         </DataGrid>

@@ -1,4 +1,6 @@
-﻿using Reolmarkedet.WPF.Commands;
+﻿using Reolmarkedet.Core.Models;
+using Reolmarkedet.WPF.Commands;
+using System.Collections.ObjectModel;
 
 namespace Reolmarkedet.WPF.ViewModels
 {
@@ -18,9 +20,11 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
+
         public DashboardViewModel Dashboard { get; }
         public TenantViewModel TenantManagement { get; }
         public ShelfViewModel ShelfManagement { get; }
+        public ObservableCollection<Rental> Rentals { get; } = new();
 
         public RelayCommand ShowDashboardCommand { get; }
         public RelayCommand ShowTenantsCommand { get; }
@@ -30,8 +34,26 @@ namespace Reolmarkedet.WPF.ViewModels
         {
             Dashboard = new DashboardViewModel();
             TenantManagement = new TenantViewModel();
-            ShelfManagement = new ShelfViewModel();
+            ShelfManagement = new ShelfViewModel(Rentals);
             CurrentViewModel = Dashboard;
+
+            // Development sample: create a tenant through the existing flow,
+            // so its ID counter and visible tenant list stay consistent.
+            TenantManagement.Name = "Testlejer";
+            TenantManagement.AddTenantCommand.Execute(null);
+
+            Tenant sampleTenant = TenantManagement.Tenants[0];
+            Shelf sampleShelf = ShelfManagement.Shelves[0];
+
+            Rental sampleRental = new(sampleTenant, sampleShelf)
+            {
+                RentalId = 1,
+                StartDate = DateTime.Today.AddMonths(-1),
+                EndDate = null,
+                MonthlyRent = 850m
+            };
+
+            Rentals.Add(sampleRental);
 
             ShowDashboardCommand =
                 new RelayCommand(_ => CurrentViewModel = Dashboard);

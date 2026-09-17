@@ -1,4 +1,5 @@
 ﻿using Reolmarkedet.Core.Models;
+using Reolmarkedet.Core.Services;
 using Reolmarkedet.WPF.Commands;
 using System.Collections.ObjectModel;
 
@@ -7,15 +8,35 @@ namespace Reolmarkedet.WPF.ViewModels
     public class ShelfViewModel : ViewModelBase
     {
         public ObservableCollection<Shelf> Shelves { get; } = new();
+        public ObservableCollection<ShelfRowViewModel> VisibleShelves { get; } = new();
         public ObservableCollection<ShelfType> ShelfTypes { get; } = new();
+        public ObservableCollection<Rental> Rentals { get; }
 
+        private readonly RentalService _rentalService = new();
         private string _newShelfTypeName = string.Empty;
         private ShelfType? _newShelfType;
         private ShelfType? _shelfTypeToDelete;
         private string _shelfTypeMessage = string.Empty;
         private string _newShelfNumber = string.Empty;
         private string _shelfMessage = string.Empty;
-        private Shelf? _selectedShelf;
+        private ShelfRowViewModel? _selectedShelfRow;
+        private bool _showOnlyAvailableShelves;
+
+        public bool ShowOnlyAvailableShelves
+        {
+            get => _showOnlyAvailableShelves;
+            set
+            {
+                if (_showOnlyAvailableShelves != value)
+                {
+                    _showOnlyAvailableShelves = value;
+                    OnPropertyChanged();
+
+                    ApplyShelfFilter();
+                }
+            }
+        }
+
 
         public string NewShelfTypeName
         {
@@ -97,14 +118,14 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
-        public Shelf? SelectedShelf
+        public ShelfRowViewModel? SelectedShelfRow
         {
-            get => _selectedShelf;
+            get => _selectedShelfRow;
             set
             {
-                if (_selectedShelf != value)
+                if (_selectedShelfRow != value)
                 {
-                    _selectedShelf = value;
+                    _selectedShelfRow = value;
                     OnPropertyChanged();
 
                     DeleteShelfCommand.RaiseCanExecuteChanged();
@@ -117,8 +138,10 @@ namespace Reolmarkedet.WPF.ViewModels
         public RelayCommand AddShelfCommand { get; }
         public RelayCommand DeleteShelfCommand { get; }
 
-        public ShelfViewModel()
+        public ShelfViewModel(ObservableCollection<Rental> rentals)
         {
+            Rentals = rentals;
+
             ShelfType sixShelves = new()
             {
                 ShelfTypeId = 1,
@@ -150,22 +173,28 @@ namespace Reolmarkedet.WPF.ViewModels
             DeleteShelfTypeCommand = new RelayCommand(DeleteShelfType, CanDeleteShelfType);
             AddShelfCommand = new RelayCommand(AddShelf, CanAddShelf);
             DeleteShelfCommand = new RelayCommand(DeleteShelf, CanDeleteShelf);
+
+            // Refreshes the list of visible shelves whenever the Shelves or Rentals collections change
+            Shelves.CollectionChanged += (_, _) => ApplyShelfFilter();
+            Rentals.CollectionChanged += (_, _) => ApplyShelfFilter();
+
+            ApplyShelfFilter();
         }
 
         private bool CanDeleteShelf(object? parameter)
         {
-            return SelectedShelf is not null;
+            return SelectedShelfRow is not null;
         }
 
         private void DeleteShelf(object? parameter)
         {
-            if (SelectedShelf is null)
+            if (SelectedShelfRow is null)
             {
                 return;
             }
 
-            Shelves.Remove(SelectedShelf);
-            SelectedShelf = null;
+            Shelves.Remove(SelectedShelfRow.Shelf);
+            SelectedShelfRow = null;
         }
 
         private bool CanAddShelf(object? parameter)
@@ -277,6 +306,30 @@ namespace Reolmarkedet.WPF.ViewModels
             return !string.IsNullOrWhiteSpace(NewShelfTypeName);
         }
 
+        private void ApplyShelfFilter()
+        {
+            SelectedShelfRow = null;
+            VisibleShelves.Clear();
+
+
+            var dateToday = DateTime.Today;
+
+            foreach (var shelf in Shelves)
+            {
+
+                if (!ShowOnlyAvailableShelves ||
+                    _rentalService.IsShelfAvailable(
+                        shelf, dateToday, dateToday, Rentals))
+                {
+                    var currentRental =
+                        _rentalService.GetCurrentRentalByShelfAndDate(shelf, dateToday, Rentals);
+                    var status =
+                        _rentalService.GetShelfStatus(shelf, dateToday, Rentals);
+
+                    VisibleShelves.Add(new ShelfRowViewModel(shelf, currentRental, status));
+                }
+            }
+        }
 
     }
 }
