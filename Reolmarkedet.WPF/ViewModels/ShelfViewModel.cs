@@ -20,16 +20,16 @@ namespace Reolmarkedet.WPF.ViewModels
         private string _newShelfNumber = string.Empty;
         private string _shelfMessage = string.Empty;
         private ShelfRowViewModel? _selectedShelfRow;
-        private bool _showOnlyAvailableShelves;
+        private ShelfStatusFilter _selectedStatusFilter = ShelfStatusFilter.All;
 
-        public bool ShowOnlyAvailableShelves
+        public ShelfStatusFilter SelectedStatusFilter
         {
-            get => _showOnlyAvailableShelves;
+            get => _selectedStatusFilter;
             set
             {
-                if (_showOnlyAvailableShelves != value)
+                if (_selectedStatusFilter != value)
                 {
-                    _showOnlyAvailableShelves = value;
+                    _selectedStatusFilter = value;
                     OnPropertyChanged();
 
                     ApplyShelfFilter();
@@ -311,25 +311,30 @@ namespace Reolmarkedet.WPF.ViewModels
             SelectedShelfRow = null;
             VisibleShelves.Clear();
 
-
             var dateToday = DateTime.Today;
 
             foreach (var shelf in Shelves)
             {
+                var currentRental =
+                    _rentalService.GetCurrentRentalByShelfAndDate(shelf, dateToday, Rentals);
+                var status =
+                    _rentalService.GetShelfStatus(shelf, dateToday, Rentals);
 
-                if (!ShowOnlyAvailableShelves ||
-                    _rentalService.IsShelfAvailable(
-                        shelf, dateToday, dateToday, Rentals))
+                // Determine if the shelf matches the selected filter
+                bool matchesFilter =
+                    SelectedStatusFilter == ShelfStatusFilter.All ||
+                    (SelectedStatusFilter == ShelfStatusFilter.Available &&
+                     status == ShelfStatus.Available) ||
+                    (SelectedStatusFilter == ShelfStatusFilter.Rented &&
+                     status == ShelfStatus.Rented) ||
+                     (SelectedStatusFilter == ShelfStatusFilter.TerminationPending &&
+                     status == ShelfStatus.TerminationPending);
+
+                if (matchesFilter)
                 {
-                    var currentRental =
-                        _rentalService.GetCurrentRentalByShelfAndDate(shelf, dateToday, Rentals);
-                    var status =
-                        _rentalService.GetShelfStatus(shelf, dateToday, Rentals);
-
                     VisibleShelves.Add(new ShelfRowViewModel(shelf, currentRental, status));
                 }
             }
         }
-
     }
 }
