@@ -18,21 +18,47 @@
 
 
         <Expander Grid.Row="1"
-                  Header="Tilføj ny reoltype"
+                  Header="Administrer reoltyper"
                   IsExpanded="False"
                   Margin="0,0,0,12">
 
             <StackPanel Margin="0,8,0,0">
-                <TextBox Width="260"
-                         Text="{Binding NewShelfTypeName,
-                         Mode=TwoWay,
-                         UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Ny reoltype" Margin="0,0,0,4" />
 
-                <Button Content="Tilføj reoltype"
-                        Command="{Binding AddShelfTypeCommand}"
-                        Width="100"
-                        Margin="8,8,0,0"
-                        Padding="8,4" />
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left">
+                    <TextBox Width="260"
+                             VerticalContentAlignment="Center"
+                             Text="{Binding NewShelfTypeName,
+                             Mode=TwoWay,
+                             UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Button Content="Tilføj reoltype"
+                            Command="{Binding AddShelfTypeCommand}"
+                            Margin="8,0,0,0"
+                            Padding="8,4" />
+                </StackPanel>
+                <TextBlock Text="Slet reoltype"
+                           Margin="0,8,0,4" />
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left">
+                    <ComboBox Width="260"
+                              ItemsSource="{Binding ShelfTypes}"
+                              DisplayMemberPath="Name"
+                              SelectedItem="{Binding ShelfTypeToDelete,
+                              Mode=TwoWay}" />
+
+                    <Button Content="Slet reoltype"
+                            Command="{Binding DeleteShelfTypeCommand}"
+                            Margin="8,0,0,0"
+                            Padding="8,4" />
+                </StackPanel>
+
+                <TextBlock Text="{Binding ShelfTypeMessage}"
+                           Foreground="DarkRed"
+                           TextWrapping="Wrap"
+                           Margin="0,8,0,0" />
             </StackPanel>
         </Expander>
 
