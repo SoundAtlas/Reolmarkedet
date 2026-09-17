@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Reolmarkedet.WPF.Views"
+             xmlns:models="clr-namespace:Reolmarkedet.Core.Models;assembly=Reolmarkedet.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="16">
@@ -18,7 +19,7 @@
 
         <StackPanel Grid.Row="1">
 
-            <CheckBox Content="Vis kun reoler ledige i dag"
+            <CheckBox Content="Vis kun ledige reoler"
                       IsChecked="{Binding ShowOnlyAvailableShelves, Mode=TwoWay}"
                       Margin="0,0,0,12" />
 
@@ -135,9 +136,40 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="Status"
-                                    Binding="{Binding ShelfStatus}"
-                                    Width="160" />
+                <DataGridTemplateColumn Header="Status" Width="160">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Padding="8,4">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Ukendt" />
+
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ShelfStatus}"
+                                                         Value="{x:Static models:ShelfStatus.Available}">
+                                                <Setter Property="Text" Value="Ledig" />
+                                                <Setter Property="Background" Value="PaleGreen" />
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding ShelfStatus}"
+                                                         Value="{x:Static models:ShelfStatus.Rented}">
+                                                <Setter Property="Text" Value="Optaget" />
+                                                <Setter Property="Background" Value="LightCoral" />
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding ShelfStatus}"
+                                                         Value="{x:Static models:ShelfStatus.TerminationPending}">
+                                                <Setter Property="Text" Value="Opsagt" />
+                                                <Setter Property="Background" Value="LightGoldenrodYellow" />
+                                            </DataTrigger>
+
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
             </DataGrid.Columns>
         </DataGrid>
