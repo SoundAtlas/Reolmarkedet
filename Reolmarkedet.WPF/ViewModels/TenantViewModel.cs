@@ -1,6 +1,5 @@
 ﻿using Reolmarkedet.Core.Models;
 using Reolmarkedet.WPF.Commands;
-using Reolmarkedet.WPF.Views;
 using System.Collections.ObjectModel;
 
 namespace Reolmarkedet.WPF.ViewModels

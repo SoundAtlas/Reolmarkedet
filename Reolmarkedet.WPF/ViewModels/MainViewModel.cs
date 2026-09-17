@@ -1,6 +1,4 @@
-﻿using Reolmarkedet.WPF.Views;
-
-namespace Reolmarkedet.WPF.ViewModels
+﻿namespace Reolmarkedet.WPF.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
