@@ -18,7 +18,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
         public string SearchText
         {
-            get { return _searchText; }
+            get => _searchText;
             set
             {
                 if (_searchText != value)
@@ -32,7 +32,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
         public string Name
         {
-            get { return _name; }
+            get => _name;
             set
             {
                 if (_name != value)
@@ -45,7 +45,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
         public string PhoneNumber
         {
-            get { return _phoneNumber; }
+            get => _phoneNumber;
             set
             {
                 if (_phoneNumber != value)
@@ -58,7 +58,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
         public string Email
         {
-            get { return _email; }
+            get => _email;
             set
             {
                 if (_email != value)
@@ -71,7 +71,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
         public Tenant? SelectedTenant
         {
-            get { return _selectedTenant; }
+            get => _selectedTenant;
             set
             {
                 if (_selectedTenant != value)
@@ -81,7 +81,7 @@ namespace Reolmarkedet.WPF.ViewModels
                     OnPropertyChanged(nameof(FormTitle)); // Notify that FormTitle has changed
                     ValidationMessage = string.Empty; // Clear validation message when a tenant is selected
 
-                    if (_selectedTenant != null)
+                    if (_selectedTenant is not null)
                     {
                         Name = _selectedTenant.Name;
                         PhoneNumber = _selectedTenant.PhoneNumber ?? string.Empty;
@@ -103,10 +103,7 @@ namespace Reolmarkedet.WPF.ViewModels
         private string _validationMessage = string.Empty;
         public string ValidationMessage
         {
-            get
-            {
-                return _validationMessage;
-            }
+            get => _validationMessage;
             set
             {
                 if (_validationMessage != value)
@@ -136,7 +133,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
         private bool CanAddTenant(object? parameter)
         {
-            return SelectedTenant == null;
+            return SelectedTenant is null;
         }
         private void AddTenant(object? obj)
         {
@@ -166,7 +163,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
         private bool CanUpdateTenant(object? parameter)
         {
-            return SelectedTenant != null;
+            return SelectedTenant is not null;
         }
 
 
@@ -198,7 +195,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
         private bool CanCancelUpdateTenant(object? parameter)
         {
-            return SelectedTenant != null;
+            return SelectedTenant is not null;
         }
 
         private void CancelUpdateTenant(object? parameter)
@@ -209,13 +206,13 @@ namespace Reolmarkedet.WPF.ViewModels
 
         private bool CanDeleteTenant(object? parameter)
         {
-            return SelectedTenant != null;
+            return SelectedTenant is not null;
         }
 
         private void DeleteTenant(object? parameter)
         {
             Tenant? tenant = SelectedTenant;
-            if (tenant == null)
+            if (tenant is null)
             {
                 return;
             }
