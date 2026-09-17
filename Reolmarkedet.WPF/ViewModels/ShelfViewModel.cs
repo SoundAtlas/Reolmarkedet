@@ -129,6 +129,7 @@ namespace Reolmarkedet.WPF.ViewModels
                     OnPropertyChanged();
 
                     DeleteShelfCommand.RaiseCanExecuteChanged();
+                    DeactivateShelfCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -137,6 +138,7 @@ namespace Reolmarkedet.WPF.ViewModels
         public RelayCommand DeleteShelfTypeCommand { get; }
         public RelayCommand AddShelfCommand { get; }
         public RelayCommand DeleteShelfCommand { get; }
+        public RelayCommand DeactivateShelfCommand { get; }
 
         public ShelfViewModel(ObservableCollection<Rental> rentals)
         {
@@ -173,12 +175,47 @@ namespace Reolmarkedet.WPF.ViewModels
             DeleteShelfTypeCommand = new RelayCommand(DeleteShelfType, CanDeleteShelfType);
             AddShelfCommand = new RelayCommand(AddShelf, CanAddShelf);
             DeleteShelfCommand = new RelayCommand(DeleteShelf, CanDeleteShelf);
+            DeactivateShelfCommand = new RelayCommand(DeactivateShelf, CanDeactivateShelf);
 
             // Refreshes the list of visible shelves whenever the Shelves or Rentals collections change
             Shelves.CollectionChanged += (_, _) => ApplyShelfFilter();
             Rentals.CollectionChanged += (_, _) => ApplyShelfFilter();
 
             ApplyShelfFilter();
+        }
+
+        private bool CanDeactivateShelf(object? parameter)
+        {
+            return SelectedShelfRow is not null && SelectedShelfRow.Shelf.IsActive;
+        }
+
+        private void DeactivateShelf(object? parameter)
+        {
+            if (SelectedShelfRow is null)
+            {
+                return;
+            }
+
+            Shelf shelf = SelectedShelfRow.Shelf;
+
+            if (!shelf.IsActive)
+            {
+                return;
+            }
+
+            bool hasCurrentOrFutureRentals = _rentalService.HasCurrentOrFutureRentalsForShelf(
+                shelf, DateTime.Today, Rentals);
+
+            if (hasCurrentOrFutureRentals)
+            {
+                ShelfMessage = "Reolen kan ikke deaktiveres, da den har igangværende eller fremtidige lejemål.";
+                return;
+            }
+
+            shelf.IsActive = false;
+            ShelfMessage = string.Empty;
+            ApplyShelfFilter();
+
         }
 
         private bool CanDeleteShelf(object? parameter)
@@ -193,8 +230,16 @@ namespace Reolmarkedet.WPF.ViewModels
                 return;
             }
 
+            Shelf shelf = SelectedShelfRow.Shelf;
+            if (_rentalService.HasRentalsForShelf(shelf, Rentals))
+            {
+                ShelfMessage = "Reolen kan ikke slettes, da den har tilknyttede lejemål.";
+                return;
+            }
+
             Shelves.Remove(SelectedShelfRow.Shelf);
             SelectedShelfRow = null;
+            ShelfMessage = string.Empty;
         }
 
         private bool CanAddShelf(object? parameter)
@@ -315,6 +360,11 @@ namespace Reolmarkedet.WPF.ViewModels
 
             foreach (var shelf in Shelves)
             {
+                if (!shelf.IsActive)
+                {
+                    continue; // Skip inactive shelves
+                }
+
                 var currentRental =
                     _rentalService.GetCurrentRentalByShelfAndDate(shelf, dateToday, Rentals);
                 var status =

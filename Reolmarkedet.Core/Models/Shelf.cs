@@ -7,6 +7,7 @@ namespace Reolmarkedet.Core.Models
     {
         public int ShelfId { get; set; }
         public int ShelfNumber { get; set; }
+        public bool IsActive { get; set; } = true;
         public ShelfType ShelfType
         {
             get => _shelfType;
@@ -26,6 +27,7 @@ namespace Reolmarkedet.Core.Models
             _shelfType = shelfType;
 
         }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)

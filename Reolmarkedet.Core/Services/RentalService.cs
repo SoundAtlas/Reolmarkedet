@@ -33,6 +33,11 @@ namespace Reolmarkedet.Core.Services
                     nameof(endDate));
             }
 
+            if (!shelf.IsActive)
+            {
+                return false; // shelf is not active and cannot be rented
+            }
+
             foreach (Rental existingRental in existingRentals)
             {
                 // Rentals for other shelves cannot block this shelf
@@ -54,6 +59,7 @@ namespace Reolmarkedet.Core.Services
                 {
                     return false; // Shelf is not available
                 }
+
             }
 
             // Every rental was checked and none blocked the requested period
@@ -103,6 +109,38 @@ namespace Reolmarkedet.Core.Services
             {
                 return ShelfStatus.Rented;
             }
+        }
+
+        public bool HasRentalsForShelf(Shelf shelf, IEnumerable<Rental> rentals)
+        {
+            foreach (var rental in rentals)
+            {
+                if (rental.Shelf.ShelfId == shelf.ShelfId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool HasCurrentOrFutureRentalsForShelf(
+            Shelf shelf, DateTime date, IEnumerable<Rental> rentals)
+        {
+            foreach (var rental in rentals)
+            {
+
+                bool sameShelf = rental.Shelf.ShelfId == shelf.ShelfId;
+
+                bool hasNotEnded =
+                    rental.EndDate is null ||
+                    rental.EndDate.Value.Date >= date.Date;
+
+                if (sameShelf && hasNotEnded)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

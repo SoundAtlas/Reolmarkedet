@@ -47,4 +47,34 @@ public class ShelfViewModelTests
         Assert.IsFalse(string.IsNullOrWhiteSpace(viewModel.ShelfMessage));
         Assert.AreEqual("1", viewModel.NewShelfNumber);
     }
+
+    [TestMethod]
+    public void DeleteShelf_WhenShelfHasHistoricalRental_LeavesShelfUnchanged()
+    {
+        // Arrange
+        var rentals = new ObservableCollection<Rental>();
+        var viewModel = new ShelfViewModel(rentals);
+        Shelf shelf = viewModel.Shelves[0];
+        int originalCount = viewModel.Shelves.Count;
+
+        Tenant tenant = new() { TenantId = 1, Name = "Test Tenant" };
+        Rental historicalRental = new(tenant, shelf)
+        {
+            RentalId = 1,
+            StartDate = new DateTime(2025, 1, 1),
+            EndDate = new DateTime(2025, 1, 31),
+            MonthlyRent = 850m
+        };
+        rentals.Add(historicalRental);
+        viewModel.SelectedShelfRow = viewModel.VisibleShelves[0];
+
+        // Act
+        viewModel.DeleteShelfCommand.Execute(null);
+
+        // Assert
+        Assert.HasCount(originalCount, viewModel.Shelves);
+        Assert.Contains(shelf, viewModel.Shelves);
+        Assert.Contains(historicalRental, rentals);
+        Assert.IsNotEmpty(viewModel.ShelfMessage);
+    }
 }

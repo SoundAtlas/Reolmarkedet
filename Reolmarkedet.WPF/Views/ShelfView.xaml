@@ -49,11 +49,6 @@
                                 Margin="8,0,0,0"
                                 Padding="8,4" />
                     </StackPanel>
-
-                    <TextBlock Text="{Binding ShelfMessage}"
-                               Foreground="DarkRed"
-                               TextWrapping="Wrap"
-                               Margin="0,8,0,0" />
                 </StackPanel>
             </Expander>
 
@@ -100,12 +95,25 @@
                                Margin="0,8,0,0" />
                 </StackPanel>
             </Expander>
+            <StackPanel Orientation="Horizontal">
 
-            <Button Content="Slet valgt reol"
-                    Command="{Binding DeleteShelfCommand}"
-                    HorizontalAlignment="Left"
-                    Margin="0,0,0,12"
-                    Padding="8,4" />
+                <Button Content="Slet valgt reol"
+                        Command="{Binding DeleteShelfCommand}"
+                        HorizontalAlignment="Left"
+                        Margin="0,0,8,12"
+                        Padding="8,4" />
+
+                <Button Content="Deaktiver valgt reol"
+                        Command="{Binding DeactivateShelfCommand}"
+                        HorizontalAlignment="Left"
+                        Margin="0,0,0,12"
+                        Padding="8,4" />
+            </StackPanel>
+
+            <TextBlock Text="{Binding ShelfMessage}"
+                       Foreground="DarkRed"
+                       TextWrapping="Wrap"
+                       Margin="0,8,0,8" />
 
             <StackPanel Orientation="Horizontal"
                         Margin="0,0,0,12">
