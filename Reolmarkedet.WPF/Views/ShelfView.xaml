@@ -113,7 +113,6 @@
                            VerticalAlignment="Center"
                            Margin="0,0,8,0" />
 
-
                 <ComboBox Width="180"
                           HorizontalAlignment="Left"
                           VerticalAlignment="Center"
@@ -132,34 +131,37 @@
             </StackPanel>
         </StackPanel>
 
-
+        <!-- Shelf List-->
         <DataGrid Grid.Row="2" ItemsSource="{Binding VisibleShelves}"
                   SelectedItem="{Binding SelectedShelfRow, Mode=TwoWay}"
                   SelectionMode="Single" SelectionUnit="FullRow"
                   AutoGenerateColumns="False" IsReadOnly="True"
                   CanUserAddRows="False" CanUserDeleteRows="False">
+
+            <DataGrid.Resources>
+                <Style x:Key="ShelfCellTextStyle" TargetType="TextBlock">
+                    <Setter Property="Padding" Value="8,4" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+            </DataGrid.Resources>
+
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Reolnummer"
                                     Binding="{Binding ShelfNumber}"
-                                    Width="120" />
+                                    Width="120"
+                                    ElementStyle="{StaticResource ShelfCellTextStyle}"/>
 
-                <DataGridTemplateColumn Header="Reoltype" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <ComboBox
-                                ItemsSource="{Binding DataContext.ShelfTypes,
-                                RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                DisplayMemberPath="Name"
-                                SelectedItem="{Binding ShelfType, Mode=TwoWay,
-                                UpdateSourceTrigger=PropertyChanged}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Nuværende lejer"
+                                    Binding="{Binding CurrentTenantName}"
+                                    Width="240"
+                                    ElementStyle="{StaticResource ShelfCellTextStyle}"/>
 
                 <DataGridTemplateColumn Header="Status" Width="160">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Padding="8,4">
+                            <TextBlock Padding="8,4"
+                                       TextAlignment="Center"
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Text" Value="Ukendt" />
@@ -191,6 +193,18 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
+                <DataGridTemplateColumn Header="Reoltype" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox
+                                ItemsSource="{Binding DataContext.ShelfTypes,
+                                RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                DisplayMemberPath="Name"
+                                SelectedItem="{Binding ShelfType, Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

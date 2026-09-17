@@ -8,6 +8,7 @@ namespace Reolmarkedet.WPF.ViewModels
         public Rental? CurrentRental { get; }
         public ShelfStatus ShelfStatus { get; }
         public int ShelfNumber => Shelf.ShelfNumber;
+        public string CurrentTenantName => CurrentRental?.Tenant.Name ?? "-";
         public ShelfType ShelfType
         {
             get => Shelf.ShelfType;

@@ -336,5 +336,10 @@ namespace Reolmarkedet.WPF.ViewModels
                 }
             }
         }
+
+        public void Refresh()
+        {
+            ApplyShelfFilter();
+        }
     }
 }
