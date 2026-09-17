@@ -19,6 +19,9 @@
         <DataTemplate DataType="{x:Type vm:ShelfViewModel}">
             <views:ShelfView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RentalViewModel}">
+            <views:RentalView/>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
@@ -39,7 +42,11 @@
 
             <Button Content="Reolstyring"
                     Command="{Binding ShowShelfManagementCommand}"
-                    Padding="8" />
+                    Padding="8" Margin="0,0,0,8"/>
+
+            <Button Content="Lejemål"
+                    Command="{Binding ShowRentalManagementCommand}"
+                    Padding="8"/>
 
         </StackPanel>
 
