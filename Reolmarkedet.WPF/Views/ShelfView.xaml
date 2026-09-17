@@ -129,7 +129,7 @@
                                 ItemsSource="{Binding DataContext.ShelfTypes,
                                 RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                 DisplayMemberPath="Name"
-                                SelectedItem="{Binding ShelfType, Mode=OneWay,
+                                SelectedItem="{Binding ShelfType, Mode=TwoWay,
                                 UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

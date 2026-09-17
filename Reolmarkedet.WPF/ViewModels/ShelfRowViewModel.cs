@@ -2,13 +2,24 @@
 
 namespace Reolmarkedet.WPF.ViewModels
 {
-    public class ShelfRowViewModel
+    public class ShelfRowViewModel : ViewModelBase
     {
         public Shelf Shelf { get; }
         public Rental? CurrentRental { get; }
         public ShelfStatus ShelfStatus { get; }
         public int ShelfNumber => Shelf.ShelfNumber;
-        public ShelfType ShelfType => Shelf.ShelfType;
+        public ShelfType ShelfType
+        {
+            get => Shelf.ShelfType;
+            set
+            {
+                if (value != Shelf.ShelfType)
+                {
+                    Shelf.ShelfType = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
 
         public ShelfRowViewModel(Shelf shelf, Rental? currentRental, ShelfStatus shelfStatus)
