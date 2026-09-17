@@ -1,4 +1,5 @@
 ﻿using Reolmarkedet.Core.Models;
+using Reolmarkedet.Core.Services;
 using Reolmarkedet.WPF.Commands;
 using System.Collections.ObjectModel;
 
@@ -9,6 +10,9 @@ namespace Reolmarkedet.WPF.ViewModels
         // Observable collection to hold the list of tenants
         public ObservableCollection<Tenant> Tenants { get; } = new();
         public ObservableCollection<Tenant> VisibleTenants { get; } = new();
+        public ObservableCollection<Rental> Rentals { get; }
+
+        private readonly RentalService _rentalService = new();
 
         private string _searchText = string.Empty;
         private string _name = string.Empty;
@@ -121,8 +125,9 @@ namespace Reolmarkedet.WPF.ViewModels
         public RelayCommand CancelUpdateTenantCommand { get; }
         public RelayCommand DeleteTenantCommand { get; }
 
-        public TenantViewModel()
+        public TenantViewModel(ObservableCollection<Rental> rentals)
         {
+            Rentals = rentals;
             AddTenantCommand = new RelayCommand(AddTenant, CanAddTenant);
             UpdateTenantCommand = new RelayCommand(UpdateTenant, CanUpdateTenant);
             CancelUpdateTenantCommand = new RelayCommand(CancelUpdateTenant, CanCancelUpdateTenant);
@@ -214,6 +219,12 @@ namespace Reolmarkedet.WPF.ViewModels
             Tenant? tenant = SelectedTenant;
             if (tenant is null)
             {
+                return;
+            }
+
+            if (_rentalService.HasRentalsForTenant(tenant, Rentals))
+            {
+                ValidationMessage = "Reollejeren har tilknyttede lejemål og kan ikke slettes.";
                 return;
             }
 

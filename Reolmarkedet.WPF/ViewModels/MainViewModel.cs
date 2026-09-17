@@ -33,7 +33,7 @@ namespace Reolmarkedet.WPF.ViewModels
         public MainViewModel()
         {
             Dashboard = new DashboardViewModel();
-            TenantManagement = new TenantViewModel();
+            TenantManagement = new TenantViewModel(Rentals);
             ShelfManagement = new ShelfViewModel(Rentals);
             CurrentViewModel = Dashboard;
 

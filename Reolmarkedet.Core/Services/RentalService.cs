@@ -142,5 +142,18 @@ namespace Reolmarkedet.Core.Services
             }
             return false;
         }
+
+        public bool HasRentalsForTenant(Tenant tenant, IEnumerable<Rental> rentals)
+        {
+            foreach (var rental in rentals)
+            {
+                if (rental.Tenant.TenantId == tenant.TenantId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
