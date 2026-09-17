@@ -10,8 +10,11 @@ namespace Reolmarkedet.WPF.ViewModels
         public ObservableCollection<ShelfType> ShelfTypes { get; } = new();
 
         private string _newShelfTypeName = string.Empty;
+        private ShelfType? _newShelfType;
         private ShelfType? _shelfTypeToDelete;
         private string _shelfTypeMessage = string.Empty;
+        private string _newShelfNumber = string.Empty;
+        private string _shelfMessage = string.Empty;
 
         public string NewShelfTypeName
         {
@@ -53,8 +56,49 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
+        public string NewShelfNumber
+        {
+            get => _newShelfNumber;
+            set
+            {
+                if (_newShelfNumber != value)
+                {
+                    _newShelfNumber = value;
+                    OnPropertyChanged();
+                    ValidateShelfNumber();
+                    AddShelfCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        public string ShelfMessage
+        {
+            get => _shelfMessage;
+            set
+            {
+                _shelfMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ShelfType? NewShelfType
+        {
+            get => _newShelfType;
+            set
+            {
+                if (_newShelfType != value)
+                {
+                    _newShelfType = value;
+                    OnPropertyChanged();
+
+                    AddShelfCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
         public RelayCommand AddShelfTypeCommand { get; }
         public RelayCommand DeleteShelfTypeCommand { get; }
+        public RelayCommand AddShelfCommand { get; }
 
         public ShelfViewModel()
         {
@@ -87,8 +131,65 @@ namespace Reolmarkedet.WPF.ViewModels
 
             AddShelfTypeCommand = new RelayCommand(AddShelfType, CanAddShelfType);
             DeleteShelfTypeCommand = new RelayCommand(DeleteShelfType, CanDeleteShelfType);
+            AddShelfCommand = new RelayCommand(AddShelf, CanAddShelf);
         }
 
+        private bool CanAddShelf(object? parameter)
+        {
+            return int.TryParse(NewShelfNumber, out int shelfNumber)
+                && shelfNumber > 0
+                && NewShelfType is not null;
+        }
+
+        private int _nextShelfId = 3;
+        private void AddShelf(object? parameter)
+        {
+            if (!int.TryParse(NewShelfNumber, out int shelfNumber) ||
+                shelfNumber <= 0 ||
+                NewShelfType is null)
+            {
+                return;
+            }
+
+            foreach (var shelf in Shelves)
+            {
+                if (shelf.ShelfNumber == shelfNumber)
+                {
+                    ShelfMessage = "Reolnummeret findes allerede.";
+                    return;
+                }
+            }
+
+            Shelf newShelf = new Shelf(NewShelfType)
+            {
+                ShelfId = _nextShelfId,
+                ShelfNumber = shelfNumber
+            };
+
+            Shelves.Add(newShelf);
+            _nextShelfId++;
+
+            NewShelfNumber = string.Empty;
+            ShelfMessage = string.Empty;
+            NewShelfType = null;
+        }
+
+        private void ValidateShelfNumber()
+        {
+            if (string.IsNullOrWhiteSpace(NewShelfNumber))
+            {
+                ShelfMessage = string.Empty;
+            }
+            else if (!int.TryParse(NewShelfNumber, out int number)
+                     || number <= 0)
+            {
+                ShelfMessage = "Reolnummeret skal være et helt tal større end 0.";
+            }
+            else
+            {
+                ShelfMessage = string.Empty;
+            }
+        }
 
         private bool CanDeleteShelfType(object? parameter)
         {
