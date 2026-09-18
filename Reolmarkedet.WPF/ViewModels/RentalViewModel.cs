@@ -181,6 +181,7 @@ namespace Reolmarkedet.WPF.ViewModels
                     TerminationMessage = string.Empty;
 
                     TerminateRentalCommand.RaiseCanExecuteChanged();
+                    ChangeTerminationEndDateCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -232,6 +233,7 @@ namespace Reolmarkedet.WPF.ViewModels
         public RelayCommand UseStandardPriceCommand { get; }
         public RelayCommand CreateRentalsCommand { get; }
         public RelayCommand TerminateRentalCommand { get; }
+        public RelayCommand ChangeTerminationEndDateCommand { get; }
 
         public RentalViewModel(
             ObservableCollection<Tenant> tenants,
@@ -253,6 +255,8 @@ namespace Reolmarkedet.WPF.ViewModels
                 new RelayCommand(CreateRentals, CanCreateRentals);
             TerminateRentalCommand =
                 new RelayCommand(TerminateRental, CanTerminateRental);
+            ChangeTerminationEndDateCommand =
+                new RelayCommand(ChangeTerminationEndDate, CanChangeTerminationEndDate);
 
             // Subscribe to changes in the SelectedShelves collection to update button availability 
             SelectedShelves.CollectionChanged += (_, _) =>
@@ -266,6 +270,65 @@ namespace Reolmarkedet.WPF.ViewModels
             };
 
             Refresh();
+        }
+
+        private bool CanChangeTerminationEndDate(object? parameter)
+        {
+            Rental? rental = SelectedRentalRow?.Rental;
+
+            // Check if the rental is valid, exists in the Rentals collection, has a termination notice, and has not ended yet
+            return rental is not null &&
+                   Rentals.Contains(rental) &&
+                   rental.TerminationNoticeDate is not null &&
+                   rental.EndDate.HasValue &&
+                   rental.EndDate.Value.Date >= DateTime.Today &&;
+        }
+
+        private void ChangeTerminationEndDate(object? parameter)
+        {
+            Rental? rental = SelectedRentalRow?.Rental;
+
+            if (rental is null || !Rentals.Contains(rental))
+            {
+                TerminationMessage = "Vælg et gyldigt lejemål at ændre slutdatoen for.";
+                return;
+            }
+            if (TerminationEndDate is null)
+            {
+                TerminationMessage = "Vælg en ny slutdato";
+                return;
+            }
+            if (rental.EndDate.HasValue &&
+                TerminationEndDate.HasValue &&
+                TerminationEndDate.Value.Date == rental.EndDate.Value.Date)
+            {
+                TerminationMessage = "Slutdatoen kan ikke være den samme som den nuværende slutdato.";
+                return;
+            }
+
+            try
+            {
+                _rentalService.ChangeTerminationEndDate(
+                    rental,
+                    DateTime.Today,
+                    TerminationEndDate.Value,
+                    Rentals);
+
+                Refresh();
+                TerminationMessage = "Lejemålet blev ændret.";
+
+            }
+            catch (ArgumentException ex)
+            {
+                TerminationMessage = ex.Message;
+                return;
+            }
+            catch (InvalidOperationException ex)
+            {
+                TerminationMessage = ex.Message;
+                return;
+
+            }
         }
 
         private bool CanTerminateRental(object? parameter)

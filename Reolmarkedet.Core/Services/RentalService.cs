@@ -263,6 +263,59 @@ namespace Reolmarkedet.Core.Services
             rental.TerminationNoticeDate = noticeDate.Date;
         }
 
+        public void ChangeTerminationEndDate(
+            Rental rental,
+            DateTime currentDate,
+            DateTime newEndDate,
+            IEnumerable<Rental> existingRentals)
+        {
+            if (!rental.TerminationNoticeDate.HasValue)
+            {
+                throw new InvalidOperationException(
+                    "Lejemålet er ikke opsagt.");
+            }
+            if (!rental.EndDate.HasValue)
+            {
+                throw new InvalidOperationException(
+                    "Lejemålet har ikke en slutdato.");
+            }
+            if (rental.EndDate.Value.Date < currentDate.Date)
+            {
+                throw new InvalidOperationException(
+                    "Lejemålet er allerede afsluttet.");
+            }
+            if (newEndDate.Date < rental.StartDate.Date)
+            {
+                throw new ArgumentException(
+                    "Slutdatoen må ikke være før startdatoen.");
+            }
+            if (newEndDate.Date < currentDate.Date)
+            {
+                throw new ArgumentException(
+                    "Slutdatoen må ikke være i fortiden");
+            }
+
+            List<Rental> otherRentals = new();
+            foreach (Rental existingRental in existingRentals)
+            {
+                if (existingRental != rental)
+                {
+                    otherRentals.Add(existingRental);
+                }
+            }
+            if (!IsShelfAvailable(
+                rental.Shelf,
+                rental.StartDate,
+                newEndDate,
+                otherRentals))
+            {
+                throw new InvalidOperationException(
+                    "Reolen er ikke tilgængelig i den angivne periode");
+            }
+            // Every check has passed, so we can safely change the termination date
+            rental.EndDate = newEndDate.Date;
+        }
+
 
     }
 }

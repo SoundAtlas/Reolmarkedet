@@ -202,18 +202,24 @@
                     <TextBlock Text="Sidste lejedag"
                                Margin="0,0,0,4" />
 
-                    <StackPanel Orientation="Horizontal">
-                        <DatePicker SelectedDate="{Binding TerminationEndDate,
-                                    Mode=TwoWay}"
+                    <WrapPanel>
+                        <DatePicker SelectedDate="{Binding TerminationEndDate, Mode=TwoWay}"
                                     Width="180"
-                                    MinHeight="30" />
+                                    MinHeight="30"
+                                    Margin="0,0,12,8" />
 
                         <Button Content="Opsig lejemål"
                                 Command="{Binding TerminateRentalCommand}"
                                 Padding="12,4"
                                 MinHeight="30"
-                                Margin="12,0,0,0" />
-                    </StackPanel>
+                                Margin="0,0,12,8" />
+
+                        <Button Content="Gem ændret slutdato"
+                                Command="{Binding ChangeTerminationEndDateCommand}"
+                                Padding="12,4"
+                                MinHeight="30"
+                                Margin="0,0,0,8" />
+                    </WrapPanel>
 
                     <TextBlock Text="{Binding TerminationMessage}"
                                Foreground="Red"
