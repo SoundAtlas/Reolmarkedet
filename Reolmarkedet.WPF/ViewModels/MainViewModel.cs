@@ -74,7 +74,7 @@ namespace Reolmarkedet.WPF.ViewModels
             Rental sampleRental2 = new(sampleTenant, sampleShelf)
             {
                 RentalId = 2,
-                StartDate = DateTime.Today.AddMonths(-1),
+                StartDate = DateTime.Today,
                 EndDate = null,
                 MonthlyRent = 850m
             };

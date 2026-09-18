@@ -196,6 +196,7 @@
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
                       Focusable="False">
+
             <Border Background="#292929"
                     BorderBrush="#595959"
                     BorderThickness="1"
@@ -245,6 +246,23 @@
 
                     <TextBlock Text="Valgte reoler:" Margin="0,0,0,4" />
 
+                    <TextBlock Text="Ingen reoler valgt. Vælg en ledig reol og klik Tilføj reol."
+                               Foreground="#AAAAAA"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,8">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedShelves.Count}"
+                                                 Value="0">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
                     <ItemsControl ItemsSource="{Binding SelectedShelves}"
                                   Margin="0,0,0,12">
                         <ItemsControl.ItemTemplate>
@@ -293,15 +311,22 @@
                                 Margin="0,0,8,8"/>
                     </WrapPanel>
 
-                    <TextBlock Text="Samlet månedlig leje for valgte reoler"
-                               FontWeight="SemiBold" />
+                    <Border BorderBrush="#404040"
+                            BorderThickness="0,1,0,0"
+                            Padding="0,12,0,0"
+                            Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="Samlet månedlig leje for valgte reoler"
+                                       TextWrapping="Wrap"
+                                       FontWeight="SemiBold" />
 
-                    <TextBlock Text="{Binding TotalMonthlyRent,
-                               StringFormat='{}{0:N2} kr.',
-                               TargetNullValue='Ugyldig pris'}"
-                               Margin="0,4,0,12" />
-
-
+                            <TextBlock Text="{Binding TotalMonthlyRent,
+                                       StringFormat='{}{0:N2} kr.',
+                                       TargetNullValue='Ugyldig pris'}"
+                                       Margin="0,4,0,0"
+                                       FontSize="24" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Border>
 
                     <Button Content="Opret lejemål"
                             Command="{Binding CreateRentalsCommand}"
@@ -309,7 +334,8 @@
                             Margin="0,0,0,12" />
 
                     <TextBlock Text="{Binding RentalMessage}"
-                               Foreground="Red"
+                               Foreground="#F28B82"
+                               Style="{StaticResource MessageTextStyle}"
                                TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
