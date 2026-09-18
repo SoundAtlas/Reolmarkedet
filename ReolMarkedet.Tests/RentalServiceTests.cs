@@ -258,5 +258,6 @@ public class RentalServiceTests
         Assert.AreEqual(new DateTime(2026, 9, 30), rental.EndDate);
         Assert.IsNull(rental.TerminationNoticeDate);
         CollectionAssert.Contains(existingRentals, rental);
+        Assert.HasCount(2, existingRentals);
     }
 }
