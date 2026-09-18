@@ -74,7 +74,11 @@ namespace Reolmarkedet.WPF.ViewModels
                     CurrentViewModel = ShelfManagement;
                 });
             ShowRentalManagementCommand =
-                new RelayCommand(_ => CurrentViewModel = RentalManagement);
+                new RelayCommand(_ =>
+                {
+                    RentalManagement.Refresh();
+                    CurrentViewModel = RentalManagement;
+                });
         }
     }
 }
