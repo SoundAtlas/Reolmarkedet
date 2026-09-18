@@ -1,5 +1,6 @@
 ﻿using Reolmarkedet.Core.Models;
 using Reolmarkedet.Core.Services;
+using Reolmarkedet.WPF.Commands;
 using System.Collections.ObjectModel;
 
 namespace Reolmarkedet.WPF.ViewModels
@@ -7,10 +8,11 @@ namespace Reolmarkedet.WPF.ViewModels
     public class RentalViewModel : ViewModelBase
     {
         public ObservableCollection<Tenant> Tenants { get; }
-        public ObservableCollection<Shelf> Shelves { get; }
         public ObservableCollection<Rental> Rentals { get; }
         public ObservableCollection<Tenant> ActiveTenants { get; } = new();
+        public ObservableCollection<Shelf> Shelves { get; }
         public ObservableCollection<Shelf> AvailableShelves { get; } = new();
+        public ObservableCollection<Shelf> SelectedShelves { get; } = new();
 
         private readonly RentalService _rentalService = new();
 
@@ -43,6 +45,8 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _selectedShelf = value;
                     OnPropertyChanged();
+
+                    AddShelfToSelectionCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -101,6 +105,10 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
+
+        public RelayCommand AddShelfToSelectionCommand { get; }
+        public RelayCommand RemoveShelfFromSelectionCommand { get; }
+
         public RentalViewModel(
             ObservableCollection<Tenant> tenants,
             ObservableCollection<Shelf> shelves,
@@ -109,8 +117,49 @@ namespace Reolmarkedet.WPF.ViewModels
             Tenants = tenants;
             Shelves = shelves;
             Rentals = rentals;
+            AddShelfToSelectionCommand =
+                new RelayCommand(AddShelfToSelection, CanAddShelfToSelection);
+            RemoveShelfFromSelectionCommand =
+                new RelayCommand(RemoveShelfFromSelection, CanRemoveShelfFromSelection);
             Refresh();
         }
+
+        private bool CanRemoveShelfFromSelection(object? parameter)
+        {
+            return parameter is Shelf shelf && SelectedShelves.Contains(shelf);
+        }
+
+        private void RemoveShelfFromSelection(object? parameter)
+        {
+            if (parameter is not Shelf shelf || !SelectedShelves.Contains(shelf))
+            {
+                return;
+            }
+
+            SelectedShelves.Remove(shelf);
+            RefreshAvailableShelves();
+        }
+
+        private bool CanAddShelfToSelection(object? parameter)
+        {
+            return SelectedShelf is not null
+                && !SelectedShelves.Contains(SelectedShelf)
+                && AvailableShelves.Contains(SelectedShelf);
+        }
+
+        private void AddShelfToSelection(object? parameter)
+        {
+            if (SelectedShelf is null ||
+                !CanAddShelfToSelection(parameter))
+            {
+                return;
+            }
+
+            Shelf shelf = SelectedShelf;
+            SelectedShelves.Add(shelf);
+            RefreshAvailableShelves();
+        }
+
         public void Refresh()
         {
             RefreshActiveTenants();
@@ -163,7 +212,8 @@ namespace Reolmarkedet.WPF.ViewModels
                 bool isAvailable = _rentalService.IsShelfAvailable(
                     shelf, StartDate.Value, EndDate, Rentals);
 
-                if (isAvailable)
+                // If the shelf is available and not already selected, add it to the available shelves
+                if (isAvailable && !SelectedShelves.Contains(shelf))
                 {
                     AvailableShelves.Add(shelf);
                 }

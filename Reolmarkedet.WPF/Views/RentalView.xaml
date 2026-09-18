@@ -39,6 +39,32 @@
                       MinHeight="30"
                       Margin="0,4,0,12" />
 
+            <Button Content="Tilføj reol"
+                    Command="{Binding AddShelfToSelectionCommand}"
+                    MinHeight="30"
+                    Margin="0,0,0,12" />
+
+            <TextBlock Text="Valgte reoler" Margin="0,0,0,4" />
+
+            <ItemsControl ItemsSource="{Binding SelectedShelves}"
+                          Margin="0,0,0,12">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel Margin="0,0,0,4">
+                            <Button DockPanel.Dock="Right"
+                                    Content="Fjern"
+                                    Padding="8,4"
+                                    Command="{Binding DataContext.RemoveShelfFromSelectionCommand,
+                                    RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" />
+
+                            <TextBlock Text="{Binding ShelfNumber}"
+                                       VerticalAlignment="Center" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
             <TextBlock Text="Aftalt månedlig leje (kr.)" />
             <TextBox Text="{Binding MonthlyRent,
                      Mode=TwoWay,
