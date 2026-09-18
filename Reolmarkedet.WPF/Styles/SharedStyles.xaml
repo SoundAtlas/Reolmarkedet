@@ -196,6 +196,20 @@
         <Setter Property="Foreground" Value="#EEEEEE" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Padding" Value="8,6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}"
+                            CornerRadius="2">
+                        <ContentPresenter
+                            ContentSource="Content"
+                            VerticalAlignment="Center"
+                            RecognizesAccessKey="True" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
 
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
@@ -329,6 +343,94 @@
         <Setter Property="Margin" Value="8,0" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- Date Picker Style -->
+    <Style x:Key="InputDatePickerStyle" TargetType="DatePicker">
+        <Style.Resources>
+            <Style TargetType="{x:Type DatePickerTextBox}">
+                <Setter Property="Background" Value="#333333" />
+                <Setter Property="Foreground" Value="#EEEEEE" />
+                <Setter Property="SelectionBrush" Value="#595959" />
+                <Setter Property="SelectionOpacity" Value="0.7" />
+                <Setter Property="CaretBrush" Value="#EEEEEE" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="DatePickerTextBox">
+                            <Border Background="{TemplateBinding Background}"
+                                    Padding="8,4">
+                                <Grid>
+                                    <ScrollViewer x:Name="PART_ContentHost"
+                                                  VerticalContentAlignment="Center" />
+
+                                    <ContentControl x:Name="PART_Watermark"
+                                                    Foreground="#AAAAAA"
+                                                    VerticalAlignment="Center"
+                                                    Focusable="False"
+                                                    IsHitTestVisible="False"
+                                                    Visibility="Collapsed"/>
+                                </Grid>
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter TargetName="PART_Watermark"
+                                            Property="Visibility"
+                                            Value="Visible" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Style.Resources>
+
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="Background" Value="#333333" />
+        <Setter Property="Foreground" Value="#EEEEEE" />
+        <Setter Property="BorderBrush" Value="#595959" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePicker">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="3">
+                        <Grid x:Name="PART_Root">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="32" />
+                            </Grid.ColumnDefinitions>
+
+                            <DatePickerTextBox x:Name="PART_TextBox"
+                                               Grid.Column="0"
+                                               VerticalContentAlignment="Center"
+                                               Focusable="{TemplateBinding Focusable}" />
+
+                            <Button x:Name="PART_Button"
+                                    Grid.Column="1"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Content="▾"
+                                    Padding="0"
+                                    BorderThickness="0"
+                                    Focusable="False"
+                                    ToolTip="Åbn kalender" />
+
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Bottom"
+                                   PlacementTarget="{Binding ElementName=PART_Root}"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>

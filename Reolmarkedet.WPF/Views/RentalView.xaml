@@ -7,199 +7,115 @@
              xmlns:vm="clr-namespace:Reolmarkedet.WPF.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="16">
+    <Grid Margin="24">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="320" />
-            <ColumnDefinition Width="16" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="24" />
+            <ColumnDefinition Width="320" />
         </Grid.ColumnDefinitions>
 
-        <ScrollViewer Grid.Column="0"
-                      VerticalScrollBarVisibility="Auto">
-            <StackPanel Width="300" HorizontalAlignment="Left">
-                <TextBlock Text="Opret lejemål"
-                           FontSize="24"
-                           Margin="0,0,0,16" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-                <TextBlock Text="Reollejer" />
-                <ComboBox ItemsSource="{Binding ActiveTenants}"
-                          DisplayMemberPath="Name"
-                          SelectedItem="{Binding SelectedTenant, Mode=TwoWay}"
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+                   Text="Lejemål"
+                   FontSize="28" FontWeight="SemiBold"
+                   Margin="0,0,0,24" />
+
+        <StackPanel Grid.Row="1" Grid.Column="0"
+                    Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Vis lejemål:"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0" />
+
+                <ComboBox Width="180"
                           MinHeight="30"
-                          Margin="0,4,0,12" />
-
-                <TextBlock Text="Startdato" />
-                <DatePicker SelectedDate="{Binding StartDate, Mode=TwoWay}"
-                            MinHeight="30"
-                            Margin="0,4,0,12"
-                            DisplayDateStart="{Binding MinimumStartDate, Mode=OneWay}"/>
-
-                <TextBlock Text="Slutdato (valgfri)" />
-                <DatePicker SelectedDate="{Binding EndDate, Mode=TwoWay}"
-                            MinHeight="30"
-                            Margin="0,4,0,12"
-                            DisplayDateStart="{Binding StartDate, Mode=OneWay}"/>
-
-                <TextBlock Text="Ledig reol i den valgte periode" />
-                <ComboBox ItemsSource="{Binding AvailableShelves}"
-                          DisplayMemberPath="ShelfNumber"
-                          SelectedItem="{Binding SelectedShelf, Mode=TwoWay}"
-                          MinHeight="30"
-                          Margin="0,4,0,12" />
-
-                <Button Content="Tilføj reol"
-                        Command="{Binding AddShelfToSelectionCommand}"
-                        MinHeight="30"
-                        Margin="0,0,0,12" />
-
-                <TextBlock Text="Valgte reoler:" Margin="0,0,0,4" />
-
-                <ItemsControl ItemsSource="{Binding SelectedShelves}"
-                              Margin="0,0,0,12">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <DockPanel Margin="0,0,0,4">
-                                <Button DockPanel.Dock="Right"
-                                        Content="Fjern"
-                                        Padding="8,4"
-                                        Command="{Binding DataContext.RemoveShelfFromSelectionCommand,
-                                        RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                        CommandParameter="{Binding}" />
-
-                                <TextBlock Text="{Binding ShelfNumber}"
-                                           VerticalAlignment="Center" />
-                            </DockPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <TextBlock Text="Aftalt månedlig leje pr. reol (kr.)"/>
-
-                <TextBox Text="{Binding MonthlyRent,
-                         Mode=TwoWay,
-                         UpdateSourceTrigger=PropertyChanged}"
-                         IsEnabled="{Binding IsCustomPrice}"
-                         MinHeight="30"
-                         Padding="6,3"
-                         Margin="0,4,0,12" />
-
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                    <Button Content="Angiv specialpris"
-                            Command="{Binding EnableCustomPriceCommand}"
-                            Padding="8,4"
-                            Margin="0,0,8,0" />
-
-                    <Button Content="Brug standardpris"
-                            Command="{Binding UseStandardPriceCommand}"
-                            Padding="8,4" />
-                </StackPanel>
-
-                <TextBlock Text="Samlet månedlig leje for valgte reoler"
-                           FontWeight="SemiBold" />
-
-                <TextBlock Text="{Binding TotalMonthlyRent,
-                           StringFormat='{}{0:N2} kr.',
-                           TargetNullValue='Ugyldig pris'}"
-                           Margin="0,4,0,12" />
-
-
-
-                <Button Content="Opret lejemål"
-                        Command="{Binding CreateRentalsCommand}"
-                        MinHeight="30"
-                        Margin="0,0,0,12" />
-
-                <TextBlock Text="{Binding RentalMessage}"
-                           Foreground="Red"
-                           TextWrapping="Wrap" />
+                          Style="{StaticResource InputComboBoxStyle}"
+                          SelectedValuePath="Tag"
+                          SelectedValue="{Binding SelectedRentalStatusFilter,
+                          Mode=TwoWay}">
+                    <ComboBoxItem Content="Aktive"
+                                  Tag="{x:Static vm:RentalStatusFilter.Active}" />
+                    <ComboBoxItem Content="Kommende"
+                                  Tag="{x:Static vm:RentalStatusFilter.Upcoming}" />
+                    <ComboBoxItem Content="Historiske"
+                                  Tag="{x:Static vm:RentalStatusFilter.Historical}" />
+                    <ComboBoxItem Content="Alle"
+                                  Tag="{x:Static vm:RentalStatusFilter.All}" />
+                </ComboBox>
             </StackPanel>
-        </ScrollViewer>
+        </StackPanel>
 
-        <Grid Grid.Column="2">
+        <Grid Grid.Column="0" Grid.Row="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Margin="0,0,0,12">
-                <TextBlock Text="Lejemål og historik"
-                           FontSize="24"
-                           Margin="0,0,0,16" />
-
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Vis lejemål:"
-                               VerticalAlignment="Center"
-                               Margin="0,0,8,0" />
-
-                    <ComboBox Width="180"
-                              MinHeight="30"
-                              SelectedValuePath="Tag"
-                              SelectedValue="{Binding SelectedRentalStatusFilter,
-                              Mode=TwoWay}">
-                        <ComboBoxItem Content="Aktive"
-                                      Tag="{x:Static vm:RentalStatusFilter.Active}" />
-                        <ComboBoxItem Content="Kommende"
-                                      Tag="{x:Static vm:RentalStatusFilter.Upcoming}" />
-                        <ComboBoxItem Content="Historiske"
-                                      Tag="{x:Static vm:RentalStatusFilter.Historical}" />
-                        <ComboBoxItem Content="Alle"
-                                      Tag="{x:Static vm:RentalStatusFilter.All}" />
-                    </ComboBox>
-                </StackPanel>
-            </StackPanel>
-
-            <DataGrid Grid.Row="1"
+            <DataGrid Grid.Row="0"
                       ItemsSource="{Binding RentalRows}"
                       SelectedItem="{Binding SelectedRentalRow, Mode=TwoWay}"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       CanUserAddRows="False"
+                      Style="{StaticResource ManagementDataGridStyle}"
                       SelectionMode="Single"
                       SelectionUnit="FullRow">
 
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID"
                                         Binding="{Binding RentalId}"
+                                        ElementStyle="{StaticResource ManagementCellTextStyle}"
                                         Width="50" />
 
                     <DataGridTextColumn Header="Reollejer"
                                         Binding="{Binding TenantName}"
                                         Width="*"
+                                        ElementStyle="{StaticResource ManagementCellTextStyle}"
                                         MinWidth="140" />
 
                     <DataGridTextColumn Header="Reol"
                                         Binding="{Binding ShelfNumber}"
-                                        Width="60" />
+                                        Width="60"
+                                        ElementStyle="{StaticResource ManagementCellTextStyle}" />
 
                     <DataGridTextColumn Header="Startdato"
                                         Binding="{Binding StartDate,
                                         StringFormat=dd-MM-yyyy}"
-                                        Width="110" />
+                                        Width="110"
+                                        ElementStyle="{StaticResource ManagementCellTextStyle}" />
 
                     <DataGridTextColumn Header="Slutdato"
                                         Binding="{Binding EndDate,
                                         StringFormat=dd-MM-yyyy,
                                         TargetNullValue='—'}"
-                                        Width="110" />
+                                        Width="110"
+                                        ElementStyle="{StaticResource ManagementCellTextStyle}" />
 
                     <DataGridTextColumn Header="Månedlig leje"
                                         Binding="{Binding MonthlyRent,
                                         StringFormat='{}{0:N2} kr.'}"
-                                        Width="120" />
+                                        Width="120"
+                                        ElementStyle="{StaticResource ManagementCellTextStyle}" />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Border Grid.Row="2"
-                    BorderBrush="LightGray"
+            <Border Grid.Row="1"
+                    Background="#292929"
+                    BorderBrush="#595959"
                     BorderThickness="1"
-                    Padding="12"
+                    CornerRadius="3"
+                    Padding="18"
                     Margin="0,12,0,0">
 
                 <StackPanel>
-                    <TextBlock Text="Opsig valgt lejemål"
-                               FontWeight="SemiBold"
-                               Margin="0,0,0,8" />
+                    <TextBlock Text="Administrer valgt lejemål"
+                               FontSize="20"
+                               Margin="0,0,0,16" />
 
                     <TextBlock Text="Sidste lejedag"
                                Margin="0,0,0,4" />
@@ -209,35 +125,147 @@
                                     Width="180"
                                     MinHeight="30"
                                     Margin="0,0,12,8"
-                                    DisplayDateStart="{Binding MinimumStartDate, Mode=OneWay}" />
+                                    DisplayDateStart="{Binding MinimumStartDate, Mode=OneWay}"
+                                    Style="{StaticResource InputDatePickerStyle}" />
 
                         <Button Content="Opsig lejemål"
                                 Command="{Binding TerminateRentalCommand}"
-                                Padding="12,4"
-                                MinHeight="30"
-                                Margin="0,0,12,8" />
+                                Margin="0,0,12,8"
+                                Style="{StaticResource WarningButtonStyle}" />
 
                         <Button Content="Gem ændret slutdato"
                                 Command="{Binding ChangeTerminationEndDateCommand}"
-                                Padding="12,4"
-                                MinHeight="30"
-                                Margin="0,0,12,8" />
+                                Margin="0,0,12,8"
+                                Style="{StaticResource PrimaryButtonStyle}" />
 
                         <Button Content="Fortryd opsigelse"
                                 Command="{Binding UndoTerminationCommand}"
-                                Padding="12,4"
-                                MinHeight="30"
-                                Margin="0,0,12,8" />
+                                Margin="0,0,12,8"
+                                Style="{StaticResource ActionButtonStyle}" />
                     </WrapPanel>
 
                     <TextBlock Text="{Binding TerminationMessage}"
-                               Foreground="Red"
+                               Foreground="#F28B82"
+                               Style="{StaticResource MessageTextStyle}"
                                TextWrapping="Wrap"
                                Margin="0,8,0,0" />
                 </StackPanel>
             </Border>
         </Grid>
+
+        <ScrollViewer Grid.Row="2" Grid.Column="2"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Focusable="False">
+            <Border Background="#292929"
+                    BorderBrush="#595959"
+                    BorderThickness="1"
+                    CornerRadius="3"
+                    Padding="18"
+                    VerticalAlignment="Top">
+                <StackPanel>
+
+                    <TextBlock Text="Opret lejemål"
+                               FontSize="20"
+                               Margin="0,0,0,16" />
+
+                    <TextBlock Text="Reollejer" />
+                    <ComboBox ItemsSource="{Binding ActiveTenants}"
+                              Style="{StaticResource InputComboBoxStyle}"
+                              DisplayMemberPath="Name"
+                              SelectedItem="{Binding SelectedTenant, Mode=TwoWay}"
+                              MinHeight="30"
+                              Margin="0,4,0,12" />
+
+                    <TextBlock Text="Startdato" />
+                    <DatePicker SelectedDate="{Binding StartDate, Mode=TwoWay}"
+                                MinHeight="30"
+                                Margin="0,4,0,12"
+                                DisplayDateStart="{Binding MinimumStartDate, Mode=OneWay}"
+                                Style="{StaticResource InputDatePickerStyle}" />
+
+                    <TextBlock Text="Slutdato (valgfri)" />
+                    <DatePicker SelectedDate="{Binding EndDate, Mode=TwoWay}"
+                                MinHeight="30"
+                                Margin="0,4,0,12"
+                                DisplayDateStart="{Binding StartDate, Mode=OneWay}"
+                                Style="{StaticResource InputDatePickerStyle}" />
+
+                    <TextBlock Text="Ledig reol i den valgte periode" />
+                    <ComboBox ItemsSource="{Binding AvailableShelves}"
+                              Style="{StaticResource InputComboBoxStyle}"
+                              DisplayMemberPath="ShelfNumber"
+                              SelectedItem="{Binding SelectedShelf, Mode=TwoWay}"
+                              MinHeight="30"
+                              Margin="0,4,0,12" />
+
+                    <Button Content="Tilføj reol"
+                            Command="{Binding AddShelfToSelectionCommand}"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Margin="0,0,0,12" />
+
+                    <TextBlock Text="Valgte reoler:" Margin="0,0,0,4" />
+
+                    <ItemsControl ItemsSource="{Binding SelectedShelves}"
+                                  Margin="0,0,0,12">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="0,0,0,4">
+                                    <Button DockPanel.Dock="Right"
+                                            Content="Fjern"
+                                            Style="{StaticResource ActionButtonStyle}"
+                                            Command="{Binding DataContext.RemoveShelfFromSelectionCommand,
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" />
+
+                                    <TextBlock Text="{Binding ShelfNumber}"
+                                               VerticalAlignment="Center" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="Aftalt månedlig leje pr. reol (kr.)"/>
+
+                    <TextBox Text="{Binding MonthlyRent,
+                             Mode=TwoWay,
+                             UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding IsCustomPrice}"
+                             Style="{StaticResource InputTextBoxStyle}"
+                             Margin="0,4,0,12" />
+
+                    <WrapPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <Button Content="Angiv specialpris"
+                                Command="{Binding EnableCustomPriceCommand}"
+                                Margin="0,0,8,8"
+                                Style="{StaticResource ActionButtonStyle}" />
+
+                        <Button Content="Brug standardpris"
+                                Command="{Binding UseStandardPriceCommand}"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Margin="0,0,8,8"/>
+                    </WrapPanel>
+
+                    <TextBlock Text="Samlet månedlig leje for valgte reoler"
+                               FontWeight="SemiBold" />
+
+                    <TextBlock Text="{Binding TotalMonthlyRent,
+                               StringFormat='{}{0:N2} kr.',
+                               TargetNullValue='Ugyldig pris'}"
+                               Margin="0,4,0,12" />
+
+
+
+                    <Button Content="Opret lejemål"
+                            Command="{Binding CreateRentalsCommand}"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Margin="0,0,0,12" />
+
+                    <TextBlock Text="{Binding RentalMessage}"
+                               Foreground="Red"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
     </Grid>
-
-
 </UserControl>
