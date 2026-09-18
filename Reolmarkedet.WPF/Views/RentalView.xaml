@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Reolmarkedet.WPF.Views"
+             xmlns:vm="clr-namespace:Reolmarkedet.WPF.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="16">
@@ -119,10 +120,32 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0"
-                       Text="Lejemål og historik"
-                       FontSize="24"
-                       Margin="0,0,0,16" />
+            <StackPanel Grid.Row="0" Margin="0,0,0,12">
+                <TextBlock Text="Lejemål og historik"
+                           FontSize="24"
+                           Margin="0,0,0,16" />
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Vis lejemål:"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0" />
+
+                    <ComboBox Width="180"
+                              MinHeight="30"
+                              SelectedValuePath="Tag"
+                              SelectedValue="{Binding SelectedRentalStatusFilter,
+                              Mode=TwoWay}">
+                        <ComboBoxItem Content="Aktive"
+                                      Tag="{x:Static vm:RentalStatusFilter.Active}" />
+                        <ComboBoxItem Content="Kommende"
+                                      Tag="{x:Static vm:RentalStatusFilter.Upcoming}" />
+                        <ComboBoxItem Content="Historiske"
+                                      Tag="{x:Static vm:RentalStatusFilter.Historical}" />
+                        <ComboBoxItem Content="Alle"
+                                      Tag="{x:Static vm:RentalStatusFilter.All}" />
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
 
             <DataGrid Grid.Row="1"
                       ItemsSource="{Binding RentalRows}"

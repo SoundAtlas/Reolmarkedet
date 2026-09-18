@@ -31,6 +31,8 @@ namespace Reolmarkedet.WPF.ViewModels
         private RentalRowViewModel? _selectedRentalRow;
         private DateTime? _terminationEndDate;
         private string _terminationMessage = string.Empty;
+        private RentalStatusFilter _selectedRentalStatusFilter =
+            RentalStatusFilter.Active;
 
         // Public properties for binding to the view
         public Tenant? SelectedTenant
@@ -205,6 +207,20 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _terminationMessage = value;
                     OnPropertyChanged();
+                }
+            }
+        }
+
+        public RentalStatusFilter SelectedRentalStatusFilter
+        {
+            get => _selectedRentalStatusFilter;
+            set
+            {
+                if (_selectedRentalStatusFilter != value)
+                {
+                    _selectedRentalStatusFilter = value;
+                    OnPropertyChanged();
+                    RefreshRentalRows();
                 }
             }
         }
@@ -486,6 +502,7 @@ namespace Reolmarkedet.WPF.ViewModels
             RefreshPrice();
             RefreshRentalRows();
         }
+
         private void RefreshActiveTenants()
         {
             ActiveTenants.Clear();
@@ -601,9 +618,28 @@ namespace Reolmarkedet.WPF.ViewModels
         {
             SelectedRentalRow = null;
             RentalRows.Clear();
+
+            DateTime today = DateTime.Today;
             foreach (var rental in Rentals)
             {
-                RentalRows.Add(new RentalRowViewModel(rental));
+                bool matchesFilter = SelectedRentalStatusFilter switch
+                {
+                    RentalStatusFilter.All => true,
+                    RentalStatusFilter.Active =>
+                        rental.StartDate.Date <= today &&
+                       (rental.EndDate is null ||
+                        rental.EndDate.Value.Date >= today),
+                    RentalStatusFilter.Upcoming =>
+                        rental.StartDate.Date > today,
+                    RentalStatusFilter.Historical =>
+                        rental.EndDate is not null &&
+                        rental.EndDate.Value.Date < today,
+                    _ => false
+                };
+                if (matchesFilter)
+                {
+                    RentalRows.Add(new RentalRowViewModel(rental));
+                }
             }
         }
     }
