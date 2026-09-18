@@ -142,6 +142,9 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _selectedShelfRow = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(HasSelectedShelf));
+                    OnPropertyChanged(nameof(ShowDeactivateButton));
+                    OnPropertyChanged(nameof(ShowReactivateButton));
 
                     DeleteShelfCommand.RaiseCanExecuteChanged();
                     DeactivateShelfCommand.RaiseCanExecuteChanged();
@@ -149,6 +152,12 @@ namespace Reolmarkedet.WPF.ViewModels
                 }
             }
         }
+
+        public bool HasSelectedShelf => SelectedShelfRow is not null;
+        public bool ShowDeactivateButton =>
+            SelectedShelfRow is not null && SelectedShelfRow.Shelf.IsActive;
+        public bool ShowReactivateButton =>
+            SelectedShelfRow is not null && !SelectedShelfRow.Shelf.IsActive;
 
         public RelayCommand AddShelfTypeCommand { get; }
         public RelayCommand DeleteShelfTypeCommand { get; }

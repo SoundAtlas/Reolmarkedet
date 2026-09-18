@@ -24,8 +24,7 @@
         <WrapPanel Grid.Row="1" Grid.Column="0"
                    Margin="0,0,0,12">
 
-            <StackPanel Orientation="Horizontal"
-                        Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Filtrer reoler efter status:"
                            VerticalAlignment="Center"
                            Margin="0,0,8,0" />
@@ -216,8 +215,7 @@
 
                     <Expander Header="Administrer reoltyper"
                               Foreground="#EEEEEE"
-                              IsExpanded="False"
-                              Margin="0,0,0,12">
+                              IsExpanded="False">
 
                         <StackPanel Margin="0,8,0,0">
                             <TextBlock Text="Ny reoltype" Margin="0,0,0,4" />
@@ -251,30 +249,41 @@
                             </StackPanel>
 
                             <TextBlock Text="{Binding ShelfTypeMessage}"
+                                       Style="{StaticResource MessageTextStyle}"
                                        Foreground="#F28B82"
                                        TextWrapping="Wrap"
                                        Margin="0,8,0,0" />
                         </StackPanel>
                     </Expander>
 
-                    <WrapPanel Orientation="Horizontal">
+                    <WrapPanel Orientation="Horizontal"
+                               Margin="0,12,0,0"
+                               Visibility="{Binding HasSelectedShelf,
+                               Converter={StaticResource BoolToVisibility}}">
                         <Button Content="Slet valgt reol"
                                 Style="{StaticResource WarningButtonStyle}"
                                 Command="{Binding DeleteShelfCommand}"
-                                Margin="0,0,8,12" />
+                                Visibility="{Binding HasSelectedShelf,
+                                Converter={StaticResource BoolToVisibility}}"
+                                Margin="0,0,8,8" />
 
                         <Button Content="Deaktiver valgt reol"
                                 Style="{StaticResource WarningButtonStyle}"
                                 Command="{Binding DeactivateShelfCommand}"
-                                Margin="0,0,0,12" />
+                                Visibility="{Binding ShowDeactivateButton,
+                                Converter={StaticResource BoolToVisibility}}"
+                                Margin="0,0,8,8" />
 
                         <Button Content="Genaktiver valgt reol"
                                 Style="{StaticResource PrimaryButtonStyle}"
                                 Command="{Binding ReactivateShelfCommand}"
-                                Margin="8,0,0,12" />
+                                Visibility="{Binding ShowReactivateButton,
+                                Converter={StaticResource BoolToVisibility}}"
+                                Margin="0,0,8,8" />
                     </WrapPanel>
 
                     <TextBlock Text="{Binding ShelfMessage}"
+                               Style="{StaticResource MessageTextStyle}"
                                Foreground="#F28B82"
                                TextWrapping="Wrap"
                                Margin="0,8,0,8" />
