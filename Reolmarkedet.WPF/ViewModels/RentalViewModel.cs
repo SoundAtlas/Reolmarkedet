@@ -56,7 +56,6 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _startDate = value;
                     OnPropertyChanged();
-                    RefreshActiveTenants();
                     RefreshAvailableShelves();
                 }
             }
@@ -71,7 +70,6 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _endDate = value;
                     OnPropertyChanged();
-                    RefreshActiveTenants();
                     RefreshAvailableShelves();
                 }
             }
@@ -146,12 +144,14 @@ namespace Reolmarkedet.WPF.ViewModels
             if (StartDate is null)
             {
                 SelectedShelf = null;
+                RentalMessage = "Vælg en startdato for at se tilgængelige reoler.";
                 return;
             }
 
             if (EndDate.HasValue &&
                 EndDate.Value.Date < StartDate.Value.Date)
             {
+                SelectedShelf = null;
                 RentalMessage = "Slutdatoen kan ikke være før startdatoen.";
                 return;
             }

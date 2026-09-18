@@ -6,7 +6,51 @@
              xmlns:local="clr-namespace:Reolmarkedet.WPF.Views"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock Text="Lejemål" FontSize="24" Margin="16" />
-    </Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16"
+                    Width="300"
+                    HorizontalAlignment="Left">
+
+            <TextBlock Text="Opret lejemål"
+                       FontSize="24"
+                       Margin="0,0,0,16" />
+
+            <TextBlock Text="Reollejer" />
+            <ComboBox ItemsSource="{Binding ActiveTenants}"
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding SelectedTenant, Mode=TwoWay}"
+                      MinHeight="30"
+                      Margin="0,4,0,12" />
+
+            <TextBlock Text="Startdato" />
+            <DatePicker SelectedDate="{Binding StartDate, Mode=TwoWay}"
+                        MinHeight="30"
+                        Margin="0,4,0,12" />
+
+            <TextBlock Text="Slutdato (valgfri)" />
+            <DatePicker SelectedDate="{Binding EndDate, Mode=TwoWay}"
+                        MinHeight="30"
+                        Margin="0,4,0,12" />
+
+            <TextBlock Text="Ledig reol i den valgte periode" />
+            <ComboBox ItemsSource="{Binding AvailableShelves}"
+                      DisplayMemberPath="ShelfNumber"
+                      SelectedItem="{Binding SelectedShelf, Mode=TwoWay}"
+                      MinHeight="30"
+                      Margin="0,4,0,12" />
+
+            <TextBlock Text="Aftalt månedlig leje (kr.)" />
+            <TextBox Text="{Binding MonthlyRent,
+                     Mode=TwoWay,
+                     UpdateSourceTrigger=PropertyChanged}"
+                     MinHeight="30"
+                     Padding="6,3"
+                     Margin="0,4,0,12" />
+
+            <TextBlock Text="{Binding RentalMessage}"
+                       Foreground="Red"
+                       TextWrapping="Wrap" />
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
