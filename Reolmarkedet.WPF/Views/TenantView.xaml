@@ -73,73 +73,90 @@
                 CornerRadius="3"
                 Padding="18"
                 VerticalAlignment="Top">
-
             <StackPanel>
-                <TextBlock Text="{Binding FormTitle}" FontSize="20" Margin="0,0,0,16"/>
 
-                <TextBlock Text="Navn" />
-                <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="0,4,0,12"
-                         Style="{StaticResource InputTextBoxStyle}"/>
+                <TextBlock Text="{Binding FormTitle}" FontSize="20" Margin="0,0,0,16"
+                           TextWrapping="Wrap"/>
 
-                <TextBlock Text="Telefon (valgfrit)" />
-                <TextBox Text="{Binding PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="0,4,0,12"
-                         Style="{StaticResource InputTextBoxStyle}"/>
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowInactivePrompt}"
+                                             Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
 
-                <TextBlock Text="Email (valgfrit)" />
-                <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="0,4,0,12"
-                         Style="{StaticResource InputTextBoxStyle}"/>
 
-                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Navn" />
+                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,4,0,12"
+                             Style="{StaticResource InputTextBoxStyle}"/>
 
-                    <Button Content="Opret" Command="{Binding AddTenantCommand}"
-                            Margin="0,0,6,0"
-                            Style="{StaticResource ActionButtonStyle}"
-                            Visibility="{Binding ShowCreateButton,
-                            Converter={StaticResource BoolToVisibility}}"/>
+                    <TextBlock Text="Telefon (valgfrit)" />
+                    <TextBox Text="{Binding PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,4,0,12"
+                             Style="{StaticResource InputTextBoxStyle}"/>
 
-                    <Button Content="Opdater" Command="{Binding UpdateTenantCommand}"
-                            Margin="0,0,6,0"
-                            Style="{StaticResource ActionButtonStyle}"
-                            Visibility="{Binding IsEditing,
-                            Converter={StaticResource BoolToVisibility}}"/>
+                    <TextBlock Text="Email (valgfrit)" />
+                    <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,4,0,12"
+                             Style="{StaticResource InputTextBoxStyle}"/>
 
-                    <Button Content="Annuller" Command="{Binding CancelUpdateTenantCommand}"
-                            Margin="0,0,6,0"
-                            Style="{StaticResource ActionButtonStyle}"
-                            Visibility="{Binding IsEditing,
-                            Converter={StaticResource BoolToVisibility}}"/>
+                    <StackPanel Orientation="Horizontal">
 
-                    <Button Content="Slet" Command="{Binding DeleteTenantCommand}"
-                            Style="{StaticResource ActionButtonStyle}"
-                            Visibility="{Binding IsEditing,
-                            Converter={StaticResource BoolToVisibility}}"/>
+                        <Button Content="Opret" Command="{Binding AddTenantCommand}"
+                                Margin="0,0,6,0"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Visibility="{Binding ShowCreateButton,
+                                Converter={StaticResource BoolToVisibility}}"/>
 
+                        <Button Content="Opdater" Command="{Binding UpdateTenantCommand}"
+                                Margin="0,0,6,0"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Visibility="{Binding IsEditing,
+                                Converter={StaticResource BoolToVisibility}}"/>
+
+                        <Button Content="Annuller" Command="{Binding CancelUpdateTenantCommand}"
+                                Margin="0,0,6,0"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Visibility="{Binding IsEditing,
+                                Converter={StaticResource BoolToVisibility}}"/>
+
+                        <Button Content="Slet" Command="{Binding DeleteTenantCommand}"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Visibility="{Binding IsEditing,
+                                Converter={StaticResource BoolToVisibility}}"/>
+
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Deaktiver lejer"
+                                Command="{Binding DeactivateTenantCommand}"
+                                HorizontalAlignment="Left"
+                                Margin="0,8,6,0"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Visibility="{Binding ShowDeactivateButton,
+                                Converter={StaticResource BoolToVisibility}}"/>
+
+                        <Button Content="Reaktiver lejer"
+                                Command="{Binding ReactivateTenantCommand}"
+                                HorizontalAlignment="Left"
+                                Margin="0,8,0,0"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Visibility="{Binding ShowReactivateButton,
+                                Converter={StaticResource BoolToVisibility}}"/>
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding ValidationMessage}" Foreground="Firebrick"
+                               TextWrapping="Wrap" Margin="0,12,0,0" />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="Deaktiver lejer"
-                            Command="{Binding DeactivateTenantCommand}"
-                            HorizontalAlignment="Left"
-                            Margin="0,8,6,0"
-                            Style="{StaticResource ActionButtonStyle}"
-                            Visibility="{Binding ShowDeactivateButton,
-                            Converter={StaticResource BoolToVisibility}}"/>
-
-                    <Button Content="Reaktiver lejer"
-                            Command="{Binding ReactivateTenantCommand}"
-                            HorizontalAlignment="Left"
-                            Margin="0,8,0,0"
-                            Style="{StaticResource ActionButtonStyle}"
-                            Visibility="{Binding ShowReactivateButton,
-                            Converter={StaticResource BoolToVisibility}}"/>
-                </StackPanel>
-
-                <TextBlock Text="{Binding ValidationMessage}" Foreground="Firebrick"
-                           TextWrapping="Wrap" Margin="0,12,0,0" />
             </StackPanel>
+
         </Border>
 
     </Grid>

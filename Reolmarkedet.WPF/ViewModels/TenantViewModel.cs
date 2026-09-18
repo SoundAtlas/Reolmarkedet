@@ -90,6 +90,7 @@ namespace Reolmarkedet.WPF.ViewModels
                     OnPropertyChanged(nameof(ShowCreateButton));
                     OnPropertyChanged(nameof(ShowDeactivateButton));
                     OnPropertyChanged(nameof(ShowReactivateButton));
+                    OnPropertyChanged(nameof(ShowInactivePrompt));
                     ValidationMessage = string.Empty; // Clear validation message when a tenant is selected
 
                     if (_selectedTenant is not null)
@@ -124,6 +125,8 @@ namespace Reolmarkedet.WPF.ViewModels
                     _showInactiveTenants = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(ShowCreateButton));
+                    OnPropertyChanged(nameof(ShowInactivePrompt));
+                    OnPropertyChanged(nameof(FormTitle));
                     SelectedTenant = null; // Clear the selected tenant when toggling the filter
                     ApplySearch();
                 }
@@ -147,7 +150,31 @@ namespace Reolmarkedet.WPF.ViewModels
         public bool ShowCreateButton => !IsEditing && !ShowInactiveTenants;
         public bool ShowDeactivateButton => SelectedTenant is not null && SelectedTenant.IsActive;
         public bool ShowReactivateButton => SelectedTenant is not null && !SelectedTenant.IsActive;
-        public string FormTitle => SelectedTenant is null ? "Opret reollejer" : $"Rediger: {SelectedTenant.Name}";
+        public bool ShowInactivePrompt => ShowInactiveTenants && !IsEditing;
+        public string FormTitle
+        {
+            get
+            {
+                if (IsEditing)
+                {
+                    return $"Rediger reollejer: {SelectedTenant?.Name}";
+                }
+                if (ShowInactivePrompt)
+                {
+                    if (VisibleTenants.Count == 0)
+                    {
+                        return "Ingen reollejere fundet";
+                    }
+
+                    return "Vælg en deaktiveret reollejer";
+                }
+                else
+                {
+                    return "Opret ny reollejer";
+                }
+            }
+        }
+
 
         public RelayCommand AddTenantCommand { get; }
         public RelayCommand UpdateTenantCommand { get; }
@@ -356,6 +383,8 @@ namespace Reolmarkedet.WPF.ViewModels
                     VisibleTenants.Add(tenant);
                 }
             }
+
+            OnPropertyChanged(nameof(FormTitle));
         }
     }
 }
