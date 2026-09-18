@@ -186,6 +186,8 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
+        public DateTime MinimumStartDate => DateTime.Today;
+
         public DateTime? TerminationEndDate
         {
             get => _terminationEndDate;
@@ -281,7 +283,7 @@ namespace Reolmarkedet.WPF.ViewModels
                    Rentals.Contains(rental) &&
                    rental.TerminationNoticeDate is not null &&
                    rental.EndDate.HasValue &&
-                   rental.EndDate.Value.Date >= DateTime.Today &&;
+                   rental.EndDate.Value.Date >= DateTime.Today;
         }
 
         private void ChangeTerminationEndDate(object? parameter)
@@ -417,9 +419,15 @@ namespace Reolmarkedet.WPF.ViewModels
             DateTime startDate = StartDate.Value.Date;
             DateTime? endDate = EndDate?.Date;
 
+            if (startDate < DateTime.Today)
+            {
+                RentalMessage = "Startdatoen må ikke være i fortiden.";
+                return;
+            }
+
             if (endDate.HasValue && endDate.Value < startDate)
             {
-                RentalMessage = "Slutdatoen kan ikke være før startdatoen.";
+                RentalMessage = "Slutdatoen må ikke være før startdatoen.";
                 return;
             }
 
