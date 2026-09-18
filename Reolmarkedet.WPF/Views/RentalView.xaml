@@ -54,6 +54,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <DataGrid Grid.Row="0"
@@ -110,47 +111,85 @@
                     BorderThickness="1"
                     CornerRadius="3"
                     Padding="18"
-                    Margin="0,12,0,0">
+                    Margin="0,12,0,0"
+                    Visibility="{Binding HasSelectedRental,
+                    Converter={StaticResource BoolToVisibility}}">
 
                 <StackPanel>
-                    <TextBlock Text="Administrer valgt lejemål"
+                    <TextBlock Text="Valgt lejemål"
                                FontSize="20"
-                               Margin="0,0,0,16" />
-
-                    <TextBlock Text="Sidste lejedag"
                                Margin="0,0,0,4" />
 
-                    <WrapPanel>
-                        <DatePicker SelectedDate="{Binding TerminationEndDate, Mode=TwoWay}"
-                                    Width="180"
-                                    MinHeight="30"
-                                    Margin="0,0,12,8"
-                                    DisplayDateStart="{Binding MinimumStartDate, Mode=OneWay}"
-                                    Style="{StaticResource InputDatePickerStyle}" />
+                    <TextBlock Margin="0,0,0,16"
+                               TextWrapping="Wrap">
+                        <Run Text="{Binding SelectedRentalRow.ShelfNumber,
+                             Mode=OneWay, StringFormat='Reol {0}'}" />
+                        <Run Text=" - " />
+                        <Run Text="{Binding SelectedRentalRow.TenantName,
+                             Mode=OneWay}" />
+                    </TextBlock>
 
-                        <Button Content="Opsig lejemål"
-                                Command="{Binding TerminateRentalCommand}"
-                                Margin="0,0,12,8"
-                                Style="{StaticResource WarningButtonStyle}" />
-
-                        <Button Content="Gem ændret slutdato"
-                                Command="{Binding ChangeTerminationEndDateCommand}"
-                                Margin="0,0,12,8"
-                                Style="{StaticResource PrimaryButtonStyle}" />
-
-                        <Button Content="Fortryd opsigelse"
-                                Command="{Binding UndoTerminationCommand}"
-                                Margin="0,0,12,8"
-                                Style="{StaticResource ActionButtonStyle}" />
-                    </WrapPanel>
-
-                    <TextBlock Text="{Binding TerminationMessage}"
-                               Foreground="#F28B82"
-                               Style="{StaticResource MessageTextStyle}"
+                    <TextBlock Text="Lejemålet er afsluttet og kan ikke ændres."
+                               Foreground="#AAAAAA"
                                TextWrapping="Wrap"
-                               Margin="0,8,0,0" />
+                               Visibility="{Binding IsSelectedRentalHistorical,
+                               Converter={StaticResource BoolToVisibility}}" />
+
+                    <StackPanel>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelectedRentalHistorical}"
+                                                 Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+
+
+                        <TextBlock Text="Sidste lejedag"
+                                   Margin="0,0,0,4" />
+
+                        <WrapPanel>
+                            <DatePicker SelectedDate="{Binding TerminationEndDate, Mode=TwoWay}"
+                                        Width="180"
+                                        MinHeight="30"
+                                        Margin="0,0,12,8"
+                                        DisplayDateStart="{Binding MinimumStartDate, Mode=OneWay}"
+                                        Style="{StaticResource InputDatePickerStyle}" />
+
+                            <Button Content="Opsig lejemål"
+                                    Command="{Binding TerminateRentalCommand}"
+                                    Visibility="{Binding ShowTerminateButton,
+                                    Converter={StaticResource BoolToVisibility}}"
+                                    Margin="0,0,12,8"
+                                    Style="{StaticResource WarningButtonStyle}" />
+
+                            <Button Content="Gem ændret slutdato"
+                                    Command="{Binding ChangeTerminationEndDateCommand}"
+                                    Visibility="{Binding ShowChangeEndDateButton,
+                                    Converter={StaticResource BoolToVisibility}}"
+                                    Margin="0,0,12,8"
+                                    Style="{StaticResource PrimaryButtonStyle}" />
+
+                            <Button Content="Fortryd opsigelse"
+                                    Command="{Binding UndoTerminationCommand}"
+                                    Visibility="{Binding ShowUndoTerminationButton,
+                                    Converter={StaticResource BoolToVisibility}}"
+                                    Margin="0,0,12,8"
+                                    Style="{StaticResource ActionButtonStyle}" />
+                        </WrapPanel>
+                    </StackPanel>
                 </StackPanel>
             </Border>
+
+            <TextBlock Grid.Row="2"
+                       Text="{Binding TerminationMessage}"
+                       Foreground="#F28B82"
+                       Style="{StaticResource MessageTextStyle}"
+                       TextWrapping="Wrap"
+                       Margin="0,8,0,0" />
         </Grid>
 
         <ScrollViewer Grid.Row="2" Grid.Column="2"
@@ -210,17 +249,25 @@
                                   Margin="0,0,0,12">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <DockPanel Margin="0,0,0,4">
-                                    <Button DockPanel.Dock="Right"
-                                            Content="Fjern"
-                                            Style="{StaticResource ActionButtonStyle}"
-                                            Command="{Binding DataContext.RemoveShelfFromSelectionCommand,
-                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}" />
+                                <Border  Background="#333333"
+                                        BorderBrush="#404040"
+                                        BorderThickness="1"
+                                        CornerRadius="3"
+                                        Padding="8"
+                                        Margin="0,0,0,6">
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right"
+                                                Content="Fjern"
+                                                Margin="8,0,0,0"
+                                                Style="{StaticResource ActionButtonStyle}"
+                                                Command="{Binding DataContext.RemoveShelfFromSelectionCommand,
+                                                RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" />
 
-                                    <TextBlock Text="{Binding ShelfNumber}"
-                                               VerticalAlignment="Center" />
-                                </DockPanel>
+                                        <TextBlock Text="{Binding ShelfNumber, StringFormat='Reol {0}'}"
+                                                   VerticalAlignment="Center" />
+                                    </DockPanel>
+                                </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

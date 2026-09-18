@@ -168,6 +168,15 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
+        public bool HasSelectedRental => SelectedRentalRow is not null;
+        public bool ShowTerminateButton => CanTerminateRental(null);
+        public bool ShowChangeEndDateButton => CanChangeTerminationEndDate(null);
+        public bool ShowUndoTerminationButton => CanUndoTermination(null);
+        public bool IsSelectedRentalHistorical =>
+            SelectedRentalRow is not null &&
+            SelectedRentalRow.Rental.EndDate.HasValue &&
+            SelectedRentalRow.Rental.EndDate.Value.Date < DateTime.Today;
+
         public RentalRowViewModel? SelectedRentalRow
         {
             get => _selectedRentalRow;
@@ -177,6 +186,12 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _selectedRentalRow = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(HasSelectedRental));
+                    OnPropertyChanged(nameof(ShowTerminateButton));
+                    OnPropertyChanged(nameof(ShowChangeEndDateButton));
+                    OnPropertyChanged(nameof(ShowUndoTerminationButton));
+                    OnPropertyChanged(nameof(IsSelectedRentalHistorical));
+
                     TerminationEndDate = _selectedRentalRow?.EndDate;
                     TerminationMessage = string.Empty;
 

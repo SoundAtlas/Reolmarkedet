@@ -68,11 +68,19 @@ namespace Reolmarkedet.WPF.ViewModels
             {
                 RentalId = 1,
                 StartDate = DateTime.Today.AddMonths(-1),
+                EndDate = DateTime.Today.AddDays(-1),
+                MonthlyRent = 850m
+            };
+            Rental sampleRental2 = new(sampleTenant, sampleShelf)
+            {
+                RentalId = 2,
+                StartDate = DateTime.Today.AddMonths(-1),
                 EndDate = null,
                 MonthlyRent = 850m
             };
 
             Rentals.Add(sampleRental);
+            Rentals.Add(sampleRental2);
 
             ShowDashboardCommand =
                 new RelayCommand(_ => CurrentViewModel = Dashboard);
