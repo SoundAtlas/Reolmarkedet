@@ -85,7 +85,11 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _selectedTenant = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(FormTitle)); // Notify that FormTitle has changed
+                    OnPropertyChanged(nameof(FormTitle));
+                    OnPropertyChanged(nameof(IsEditing));
+                    OnPropertyChanged(nameof(ShowCreateButton));
+                    OnPropertyChanged(nameof(ShowDeactivateButton));
+                    OnPropertyChanged(nameof(ShowReactivateButton));
                     ValidationMessage = string.Empty; // Clear validation message when a tenant is selected
 
                     if (_selectedTenant is not null)
@@ -105,6 +109,7 @@ namespace Reolmarkedet.WPF.ViewModels
                     DeleteTenantCommand.RaiseCanExecuteChanged();
                     DeactivateTenantCommand.RaiseCanExecuteChanged();
                     ReactivateTenantCommand.RaiseCanExecuteChanged();
+
                 }
             }
         }
@@ -118,6 +123,7 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _showInactiveTenants = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(ShowCreateButton));
                     SelectedTenant = null; // Clear the selected tenant when toggling the filter
                     ApplySearch();
                 }
@@ -137,6 +143,10 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
+        public bool IsEditing => SelectedTenant is not null;
+        public bool ShowCreateButton => !IsEditing && !ShowInactiveTenants;
+        public bool ShowDeactivateButton => SelectedTenant is not null && SelectedTenant.IsActive;
+        public bool ShowReactivateButton => SelectedTenant is not null && !SelectedTenant.IsActive;
         public string FormTitle => SelectedTenant is null ? "Opret reollejer" : $"Rediger: {SelectedTenant.Name}";
 
         public RelayCommand AddTenantCommand { get; }
