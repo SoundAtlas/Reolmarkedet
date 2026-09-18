@@ -186,6 +186,19 @@
                                     Width="240"
                                     ElementStyle="{StaticResource ShelfCellTextStyle}"/>
 
+                <DataGridTemplateColumn Header="Reoltype" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox
+                                ItemsSource="{Binding DataContext.ShelfTypes,
+                                RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                DisplayMemberPath="Name"
+                                SelectedItem="{Binding ShelfType, Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
                 <DataGridTemplateColumn Header="Status" Width="160">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -223,18 +236,14 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="Reoltype" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <ComboBox
-                                ItemsSource="{Binding DataContext.ShelfTypes,
-                                RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                DisplayMemberPath="Name"
-                                SelectedItem="{Binding ShelfType, Mode=TwoWay,
-                                UpdateSourceTrigger=PropertyChanged}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Sidste lejedag"
+                                    Binding="{Binding TerminationEndDate,
+                                    StringFormat=dd-MM-yyyy,
+                                    TargetNullValue='-'}"
+                                    Width="140"
+                                    ElementStyle="{StaticResource ShelfCellTextStyle}" />
+
+
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

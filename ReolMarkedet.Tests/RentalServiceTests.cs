@@ -186,4 +186,77 @@ public class RentalServiceTests
         // Assert
         Assert.AreEqual(ShelfStatus.Available, status);
     }
+
+    [TestMethod]
+    public void TerminateRental_WhenValid_RecordsDatesAndPreservesRental()
+    {
+        // Arrange
+        RentalService rentalService = new();
+        Tenant tenant = new() { TenantId = 1, Name = "Test Tenant" };
+        ShelfType shelfType = new() { ShelfTypeId = 1, Name = "Test Type" };
+        Shelf shelf = new(shelfType) { ShelfId = 1, ShelfNumber = 1 };
+
+        Rental rental = new(tenant, shelf)
+        {
+            StartDate = new DateTime(2026, 8, 18),
+            EndDate = null,
+            TerminationNoticeDate = null
+        };
+
+        List<Rental> existingRentals = new() { rental };
+
+        // Act        
+        rentalService.TerminateRental(
+            rental,
+            new DateTime(2026, 9, 18),
+            new DateTime(2026, 10, 31),
+            existingRentals);
+
+        // Assert
+        Assert.AreEqual(rental.EndDate, new DateTime(2026, 10, 31));
+        Assert.AreEqual(rental.TerminationNoticeDate, new DateTime(2026, 9, 18));
+        CollectionAssert.Contains(existingRentals, rental);
+        ShelfStatus status =
+            rentalService.GetShelfStatus(
+                shelf, new DateTime(2026, 9, 18), existingRentals);
+        Assert.AreEqual(ShelfStatus.TerminationPending, status);
+    }
+
+    [TestMethod]
+    public void TerminateRental_WhenOverlappingAnotherRental_ThrowsAndLeavesDatesUnchanged()
+    {
+        RentalService rentalService = new();
+        Tenant tenant = new() { TenantId = 1, Name = "Test Tenant" };
+        ShelfType shelfType = new() { ShelfTypeId = 1, Name = "Test Type" };
+        Shelf shelf = new(shelfType) { ShelfId = 1, ShelfNumber = 1 };
+
+        Rental rental = new(tenant, shelf)
+        {
+            StartDate = new DateTime(2026, 8, 18),
+            EndDate = new DateTime(2026, 9, 30),
+            TerminationNoticeDate = null
+        };
+
+        Rental rentalTwo = new(tenant, shelf)
+        {
+            StartDate = new DateTime(2026, 10, 1),
+            EndDate = null,
+            TerminationNoticeDate = null
+        };
+
+        List<Rental> existingRentals = new() { rental, rentalTwo };
+
+
+        // Act & Assert
+        Assert.ThrowsExactly<InvalidOperationException>(() =>
+            rentalService.TerminateRental(
+                rental,
+                new DateTime(2026, 9, 18),
+                new DateTime(2026, 10, 31),
+                existingRentals));
+
+        Assert.AreEqual(new DateTime(2026, 9, 30), rental.EndDate);
+        Assert.IsNull(rental.TerminationNoticeDate);
+        CollectionAssert.Contains(existingRentals, rental);
+    }
 }
