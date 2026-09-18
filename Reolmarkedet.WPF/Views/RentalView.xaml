@@ -124,6 +124,7 @@
 
             <DataGrid Grid.Row="1"
                       ItemsSource="{Binding RentalRows}"
+                      SelectedItem="{Binding SelectedRentalRow, Mode=TwoWay}"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       CanUserAddRows="False"

@@ -206,5 +206,58 @@ namespace Reolmarkedet.Core.Services
             }
             return shelfCount;
         }
+        public void TerminateRental(
+            Rental rental,
+            DateTime noticeDate,
+            DateTime endDate,
+            IEnumerable<Rental> existingRentals)
+        {
+
+            if (rental.TerminationNoticeDate.HasValue)
+            {
+                throw new InvalidOperationException(
+                    "Lejemålet er allerede opsagt");
+            }
+
+            if (rental.EndDate.HasValue &&
+                rental.EndDate.Value.Date < noticeDate.Date)
+            {
+                throw new InvalidOperationException(
+                    "Lejemålet er allerede afsluttet.");
+            }
+
+            if (endDate.Date < rental.StartDate.Date
+                || endDate.Date < noticeDate.Date)
+            {
+                throw new ArgumentException(
+                    "Slutdatoen kan ikke være før startdatoen eller opsigelsesdatoen.");
+            }
+
+            List<Rental> otherRentals = new();
+
+            foreach (Rental existingRental in existingRentals)
+            {
+                if (existingRental != rental)
+                {
+                    otherRentals.Add(existingRental);
+                }
+            }
+
+            if (!IsShelfAvailable(
+                rental.Shelf,
+                rental.StartDate,
+                endDate,
+                otherRentals))
+            {
+                throw new InvalidOperationException(
+                    "Reolen er ikke tilgængelig i den angivne periode");
+            }
+
+            // Every check has passed, so we can safely terminate the rental
+            rental.EndDate = endDate.Date;
+            rental.TerminationNoticeDate = noticeDate.Date;
+        }
+
+
     }
 }

@@ -7,6 +7,7 @@ namespace Reolmarkedet.WPF.ViewModels
 {
     public class RentalViewModel : ViewModelBase
     {
+        // Collections for binding to the view
         public ObservableCollection<Tenant> Tenants { get; }
         public ObservableCollection<Tenant> ActiveTenants { get; } = new();
         public ObservableCollection<Shelf> Shelves { get; }
@@ -15,9 +16,10 @@ namespace Reolmarkedet.WPF.ViewModels
         public ObservableCollection<Rental> Rentals { get; }
         public ObservableCollection<RentalRowViewModel> RentalRows { get; } = new();
 
-
+        // Service for rental-related operations
         private readonly RentalService _rentalService = new();
 
+        // Private backing fields for properties
         private Tenant? _selectedTenant;
         private Shelf? _selectedShelf;
         private DateTime? _startDate = DateTime.Today;
@@ -26,7 +28,11 @@ namespace Reolmarkedet.WPF.ViewModels
         private string _rentalMessage = string.Empty;
         private decimal _standardMonthlyRent;
         private bool _isCustomPrice;
+        private RentalRowViewModel? _selectedRentalRow;
+        private DateTime? _terminationEndDate;
+        private string _terminationMessage = string.Empty;
 
+        // Public properties for binding to the view
         public Tenant? SelectedTenant
         {
             get => _selectedTenant;
@@ -160,12 +166,56 @@ namespace Reolmarkedet.WPF.ViewModels
             }
         }
 
+        public RentalRowViewModel? SelectedRentalRow
+        {
+            get => _selectedRentalRow;
+            set
+            {
+                if (_selectedRentalRow != value)
+                {
+                    _selectedRentalRow = value;
+                    OnPropertyChanged();
+                    TerminationEndDate = _selectedRentalRow?.EndDate;
+                    TerminationMessage = string.Empty;
 
+                    TerminateRentalCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        public DateTime? TerminationEndDate
+        {
+            get => _terminationEndDate;
+            set
+            {
+                if (_terminationEndDate != value)
+                {
+                    _terminationEndDate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string TerminationMessage
+        {
+            get => _terminationMessage;
+            private set
+            {
+                if (_terminationMessage != value)
+                {
+                    _terminationMessage = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        // Commands for user interactions
         public RelayCommand AddShelfToSelectionCommand { get; }
         public RelayCommand RemoveShelfFromSelectionCommand { get; }
         public RelayCommand EnableCustomPriceCommand { get; }
         public RelayCommand UseStandardPriceCommand { get; }
         public RelayCommand CreateRentalsCommand { get; }
+        public RelayCommand TerminateRentalCommand { get; }
 
         public RentalViewModel(
             ObservableCollection<Tenant> tenants,
@@ -185,6 +235,8 @@ namespace Reolmarkedet.WPF.ViewModels
                 new RelayCommand(UseStandardPrice, CanUseStandardPrice);
             CreateRentalsCommand =
                 new RelayCommand(CreateRentals, CanCreateRentals);
+            TerminateRentalCommand =
+                new RelayCommand(TerminateRental, CanTerminateRental);
 
             // Subscribe to changes in the SelectedShelves collection to update button availability 
             SelectedShelves.CollectionChanged += (_, _) =>
@@ -198,6 +250,58 @@ namespace Reolmarkedet.WPF.ViewModels
             };
 
             Refresh();
+        }
+
+        private bool CanTerminateRental(object? parameter)
+        {
+            Rental? rental = SelectedRentalRow?.Rental;
+
+            // Check if the rental is valid, exists in the Rentals collection, has no termination notice, and has not ended yet
+            return rental is not null &&
+                   Rentals.Contains(rental) &&
+                   rental.TerminationNoticeDate is null &&
+                   (rental.EndDate is null ||
+                   rental.EndDate.Value.Date >= DateTime.Today);
+        }
+
+        private void TerminateRental(object? parameter)
+        {
+            Rental? rental = SelectedRentalRow?.Rental;
+
+            if (rental is null || !Rentals.Contains(rental))
+            {
+                TerminationMessage = "Vælg et gyldigt lejemål at opsige.";
+                return;
+            }
+
+            if (TerminationEndDate is null)
+            {
+                TerminationMessage = "Vælg en slutdato for opsigelsen.";
+                return;
+            }
+
+            try
+            {
+                _rentalService.TerminateRental(
+                    rental,
+                    DateTime.Today,
+                    TerminationEndDate.Value,
+                    Rentals);
+            }
+            catch (ArgumentException ex)
+            {
+                TerminationMessage = ex.Message;
+                return;
+            }
+            catch (InvalidOperationException ex)
+            {
+                TerminationMessage = ex.Message;
+                return;
+            }
+
+            SelectedRentalRow = null;
+            Refresh();
+            TerminationMessage = "Lejemålet blev opsagt.";
         }
 
         private bool CanCreateRentals(object? parameter)
@@ -495,6 +599,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
         private void RefreshRentalRows()
         {
+            SelectedRentalRow = null;
             RentalRows.Clear();
             foreach (var rental in Rentals)
             {
