@@ -8,6 +8,8 @@
         xmlns:vm="clr-namespace:Reolmarkedet.WPF.ViewModels"
         mc:Ignorable="d"
         Title="Reolmarkedet" Height="800" Width="1200"
+        FontFamily="Segoe UI" FontSize="14"
+        Background="#202020" Foreground="#EEEEEE"
         MinHeight="360" MinWidth="760">
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
@@ -26,29 +28,34 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="140" />
+            <ColumnDefinition Width="160" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Sidebar -->
-        <StackPanel Grid.Column="0" Margin="12">
-            <Button Content="Overblik"
-                    Command="{Binding ShowDashboardCommand}"
-                    Padding="8" Margin="0,0,0,8" />
+        <Border Grid.Column="0"
+                Background="#292929"
+                BorderBrush="#595959"
+                BorderThickness="0,0,1,0">
 
-            <Button Content="Reollejere"
-                    Command="{Binding ShowTenantsCommand}"
-                    Padding="8" Margin="0,0,0,8"/>
+            <StackPanel Margin="12,20">
 
-            <Button Content="Reolstyring"
-                    Command="{Binding ShowShelfManagementCommand}"
-                    Padding="8" Margin="0,0,0,8"/>
+                <Button Content="Overblik"
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Command="{Binding ShowDashboardCommand}" />
 
-            <Button Content="Lejemål"
-                    Command="{Binding ShowRentalManagementCommand}"
-                    Padding="8"/>
+                <Button Content="Reollejere"
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Command="{Binding ShowTenantsCommand}" />
 
-        </StackPanel>
+                <Button Content="Reoler"
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Command="{Binding ShowShelfManagementCommand}" />
+
+                <Button Content="Lejemål"
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Command="{Binding ShowRentalManagementCommand}" />
+            </StackPanel>
+        </Border>
 
         <ContentControl Grid.Column="1"
                         Content="{Binding CurrentViewModel}" />
