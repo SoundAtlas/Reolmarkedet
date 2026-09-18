@@ -434,7 +434,7 @@
     </Style>
 
 
-    <!-- Scroll Viewer Style-->
+    <!-- Scroll Bar Style-->
 
     <Style x:Key="ScrollBarThumbStyle" TargetType="Thumb">
         <Setter Property="Background" Value="#595959" />
@@ -494,12 +494,42 @@
         </Border>
     </ControlTemplate>
 
+    <ControlTemplate x:Key="HorizontalScrollBarTemplate"
+                     TargetType="ScrollBar">
+        <Border Background="#292929">
+            <Track x:Name="PART_Track"
+                   Orientation="Horizontal"
+                   IsDirectionReversed="False">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton
+                        Style="{StaticResource ScrollBarPageButtonStyle}"
+                        Command="{x:Static ScrollBar.PageLeftCommand}" />
+                </Track.DecreaseRepeatButton>
+
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource ScrollBarThumbStyle}" />
+                </Track.Thumb>
+
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton
+                        Style="{StaticResource ScrollBarPageButtonStyle}"
+                        Command="{x:Static ScrollBar.PageRightCommand}" />
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Border>
+    </ControlTemplate>
+
     <Style TargetType="ScrollBar">
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Vertical">
                 <Setter Property="Width" Value="14" />
                 <Setter Property="Template"
                         Value="{StaticResource VerticalScrollBarTemplate}" />
+            </Trigger>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Height" Value="14" />
+                <Setter Property="Template"
+                        Value="{StaticResource HorizontalScrollBarTemplate}" />
             </Trigger>
         </Style.Triggers>
     </Style>

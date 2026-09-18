@@ -70,106 +70,108 @@
 
 
         <!-- Form -->
-        <Border Grid.Column="2" Grid.Row="2"
-                Background="#292929"
-                BorderBrush="#595959"
-                BorderThickness="1"
-                CornerRadius="3"
-                Padding="18"
-                VerticalAlignment="Top">
-            <StackPanel>
+        <ScrollViewer Grid.Column="2" Grid.Row="2"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Focusable="False">
 
-                <TextBlock Text="{Binding FormTitle}" FontSize="20" Margin="0,0,0,16"
-                           TextWrapping="Wrap"/>
-
+            <Border Background="#292929"
+                    BorderBrush="#595959"
+                    BorderThickness="1"
+                    CornerRadius="3"
+                    Padding="18"
+                    VerticalAlignment="Top">
                 <StackPanel>
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ShowInactivePrompt}"
-                                             Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
+
+                    <TextBlock Text="{Binding FormTitle}" FontSize="20" Margin="0,0,0,16"
+                               TextWrapping="Wrap"/>
+
+                    <StackPanel>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ShowInactivePrompt}"
+                                                 Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
 
 
-                    <TextBlock Text="Navn" />
-                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="0,4,0,12"
-                             Style="{StaticResource InputTextBoxStyle}"/>
+                        <TextBlock Text="Navn" />
+                        <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0,4,0,12"
+                                 Style="{StaticResource InputTextBoxStyle}"/>
 
-                    <TextBlock Text="Telefon (valgfrit)" />
-                    <TextBox Text="{Binding PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="0,4,0,12"
-                             Style="{StaticResource InputTextBoxStyle}"/>
+                        <TextBlock Text="Telefon (valgfrit)" />
+                        <TextBox Text="{Binding PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0,4,0,12"
+                                 Style="{StaticResource InputTextBoxStyle}"/>
 
-                    <TextBlock Text="Email (valgfrit)" />
-                    <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="0,4,0,12"
-                             Style="{StaticResource InputTextBoxStyle}"/>
+                        <TextBlock Text="Email (valgfrit)" />
+                        <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0,4,0,12"
+                                 Style="{StaticResource InputTextBoxStyle}"/>
 
-                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal">
 
-                        <Button Content="Opret" Command="{Binding AddTenantCommand}"
-                                Margin="0,0,8,0"
-                                Style="{StaticResource PrimaryButtonStyle}"
-                                Visibility="{Binding ShowCreateButton,
-                                Converter={StaticResource BoolToVisibility}}"/>
-
-                        <Button Content="Opdater" Command="{Binding UpdateTenantCommand}"
-                                Margin="0,0,8,0"
-                                Style="{StaticResource PrimaryButtonStyle}"
-                                Visibility="{Binding IsEditing,
-                                Converter={StaticResource BoolToVisibility}}"/>
-
-                        <Button Content="Annuller" Command="{Binding CancelUpdateTenantCommand}"
-                                Margin="0,0,8,0"
-                                Style="{StaticResource ActionButtonStyle}"
-                                Visibility="{Binding IsEditing,
-                                Converter={StaticResource BoolToVisibility}}"/>
-
-                    </StackPanel>
-
-                    <Border BorderBrush="#595959"
-                            BorderThickness="0,1,0,0"
-                            Margin="0,16,0,0"
-                            Padding="0,12,0,0"
-                            Visibility="{Binding IsEditing,
-                            Converter={StaticResource BoolToVisibility}}">
-                        <WrapPanel>
-                            <Button Content="Slet" Command="{Binding DeleteTenantCommand}"
+                            <Button Content="Opret" Command="{Binding AddTenantCommand}"
                                     Margin="0,0,8,0"
-                                    Style="{StaticResource WarningButtonStyle}"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Visibility="{Binding ShowCreateButton,
+                                    Converter={StaticResource BoolToVisibility}}"/>
+
+                            <Button Content="Opdater" Command="{Binding UpdateTenantCommand}"
+                                    Margin="0,0,8,0"
+                                    Style="{StaticResource PrimaryButtonStyle}"
                                     Visibility="{Binding IsEditing,
                                     Converter={StaticResource BoolToVisibility}}"/>
 
-                            <Button Content="Deaktiver lejer"
-                                    Command="{Binding DeactivateTenantCommand}"
-                                    HorizontalAlignment="Left"
-                                    Margin="0,0,8,0"
-                                    Style="{StaticResource WarningButtonStyle}"
-                                    Visibility="{Binding ShowDeactivateButton,
-                                    Converter={StaticResource BoolToVisibility}}"/>
-
-                            <Button Content="Reaktiver lejer"
-                                    Command="{Binding ReactivateTenantCommand}"
-                                    HorizontalAlignment="Left"
+                            <Button Content="Annuller" Command="{Binding CancelUpdateTenantCommand}"
                                     Margin="0,0,8,0"
                                     Style="{StaticResource ActionButtonStyle}"
-                                    Visibility="{Binding ShowReactivateButton,
+                                    Visibility="{Binding IsEditing,
                                     Converter={StaticResource BoolToVisibility}}"/>
-                        </WrapPanel>
-                    </Border>
 
-                    <TextBlock Text="{Binding ValidationMessage}" Foreground="#F28B82"
-                               TextWrapping="Wrap" Margin="0,12,0,0" />
+                        </StackPanel>
+
+                        <Border BorderBrush="#595959"
+                                BorderThickness="0,1,0,0"
+                                Margin="0,16,0,0"
+                                Padding="0,12,0,0"
+                                Visibility="{Binding IsEditing,
+                                Converter={StaticResource BoolToVisibility}}">
+                            <WrapPanel>
+                                <Button Content="Slet" Command="{Binding DeleteTenantCommand}"
+                                        Margin="0,0,8,0"
+                                        Style="{StaticResource WarningButtonStyle}"
+                                        Visibility="{Binding IsEditing,
+                                        Converter={StaticResource BoolToVisibility}}"/>
+
+                                <Button Content="Deaktiver lejer"
+                                        Command="{Binding DeactivateTenantCommand}"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,0,8,0"
+                                        Style="{StaticResource WarningButtonStyle}"
+                                        Visibility="{Binding ShowDeactivateButton,
+                                        Converter={StaticResource BoolToVisibility}}"/>
+
+                                <Button Content="Reaktiver lejer"
+                                        Command="{Binding ReactivateTenantCommand}"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,0,8,0"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Visibility="{Binding ShowReactivateButton,
+                                        Converter={StaticResource BoolToVisibility}}"/>
+                            </WrapPanel>
+                        </Border>
+
+                        <TextBlock Text="{Binding ValidationMessage}" Foreground="#F28B82"
+                                   TextWrapping="Wrap" Margin="0,12,0,0" />
+                    </StackPanel>
                 </StackPanel>
-
-            </StackPanel>
-
-        </Border>
-
+            </Border>
+        </ScrollViewer>
     </Grid>
 </UserControl>

@@ -1,4 +1,5 @@
 ﻿using Reolmarkedet.Core.Models;
+using Reolmarkedet.WPF.ViewModels.enums;
 
 namespace Reolmarkedet.WPF.ViewModels
 {
@@ -11,7 +12,26 @@ namespace Reolmarkedet.WPF.ViewModels
         public DateTime StartDate => Rental.StartDate;
         public DateTime? EndDate => Rental.EndDate;
         public decimal MonthlyRent => Rental.MonthlyRent;
+        public RentalStatus Status
+        {
+            get
+            {
+                if (Rental.EndDate.HasValue &&
+                    Rental.EndDate.Value.Date < DateTime.Today.Date)
+                {
+                    return RentalStatus.Historical;
 
+                }
+                else if (Rental.StartDate.Date > DateTime.Today.Date)
+                {
+                    return RentalStatus.Upcoming;
+                }
+                else
+                {
+                    return RentalStatus.Active;
+                }
+            }
+        }
 
         public RentalRowViewModel(Rental rental)
         {
