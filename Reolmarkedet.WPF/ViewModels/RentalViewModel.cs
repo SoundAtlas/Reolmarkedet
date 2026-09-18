@@ -8,11 +8,13 @@ namespace Reolmarkedet.WPF.ViewModels
     public class RentalViewModel : ViewModelBase
     {
         public ObservableCollection<Tenant> Tenants { get; }
-        public ObservableCollection<Rental> Rentals { get; }
         public ObservableCollection<Tenant> ActiveTenants { get; } = new();
         public ObservableCollection<Shelf> Shelves { get; }
         public ObservableCollection<Shelf> AvailableShelves { get; } = new();
         public ObservableCollection<Shelf> SelectedShelves { get; } = new();
+        public ObservableCollection<Rental> Rentals { get; }
+        public ObservableCollection<RentalRowViewModel> RentalRows { get; } = new();
+
 
         private readonly RentalService _rentalService = new();
 
@@ -378,6 +380,7 @@ namespace Reolmarkedet.WPF.ViewModels
             RefreshActiveTenants();
             RefreshAvailableShelves();
             RefreshPrice();
+            RefreshRentalRows();
         }
         private void RefreshActiveTenants()
         {
@@ -487,6 +490,15 @@ namespace Reolmarkedet.WPF.ViewModels
             if (!IsCustomPrice)
             {
                 MonthlyRent = StandardMonthlyRent.ToString("0.00");
+            }
+        }
+
+        private void RefreshRentalRows()
+        {
+            RentalRows.Clear();
+            foreach (var rental in Rentals)
+            {
+                RentalRows.Add(new RentalRowViewModel(rental));
             }
         }
     }
