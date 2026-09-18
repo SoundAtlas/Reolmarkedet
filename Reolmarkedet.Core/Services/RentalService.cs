@@ -100,8 +100,7 @@ namespace Reolmarkedet.Core.Services
             {
                 return ShelfStatus.Available;
             }
-            else if (currentRental.TerminationNoticeDate is not null &&
-                     currentRental.TerminationNoticeDate.Value.Date <= date.Date)
+            else if (currentRental.EndDate is not null)
             {
                 return ShelfStatus.TerminationPending;
             }
@@ -206,6 +205,7 @@ namespace Reolmarkedet.Core.Services
             }
             return shelfCount;
         }
+
         public void TerminateRental(
             Rental rental,
             DateTime noticeDate,
@@ -213,17 +213,10 @@ namespace Reolmarkedet.Core.Services
             IEnumerable<Rental> existingRentals)
         {
 
-            if (rental.TerminationNoticeDate.HasValue)
+            if (rental.EndDate.HasValue)
             {
                 throw new InvalidOperationException(
-                    "Lejemålet er allerede opsagt");
-            }
-
-            if (rental.EndDate.HasValue &&
-                rental.EndDate.Value.Date < noticeDate.Date)
-            {
-                throw new InvalidOperationException(
-                    "Lejemålet er allerede afsluttet.");
+                    "Lejemålet har allerede en slutdato");
             }
 
             if (endDate.Date < rental.StartDate.Date)
@@ -269,15 +262,10 @@ namespace Reolmarkedet.Core.Services
             DateTime newEndDate,
             IEnumerable<Rental> existingRentals)
         {
-            if (!rental.TerminationNoticeDate.HasValue)
-            {
-                throw new InvalidOperationException(
-                    "Lejemålet er ikke opsagt.");
-            }
             if (!rental.EndDate.HasValue)
             {
                 throw new InvalidOperationException(
-                    "Lejemålet har ikke en slutdato.");
+                    "Lejemålet er ikke opsagt.");
             }
             if (rental.EndDate.Value.Date < currentDate.Date)
             {

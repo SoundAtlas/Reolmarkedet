@@ -278,10 +278,8 @@ namespace Reolmarkedet.WPF.ViewModels
         {
             Rental? rental = SelectedRentalRow?.Rental;
 
-            // Check if the rental is valid, exists in the Rentals collection, has a termination notice, and has not ended yet
             return rental is not null &&
                    Rentals.Contains(rental) &&
-                   rental.TerminationNoticeDate is not null &&
                    rental.EndDate.HasValue &&
                    rental.EndDate.Value.Date >= DateTime.Today;
         }
@@ -337,12 +335,9 @@ namespace Reolmarkedet.WPF.ViewModels
         {
             Rental? rental = SelectedRentalRow?.Rental;
 
-            // Check if the rental is valid, exists in the Rentals collection, has no termination notice, and has not ended yet
             return rental is not null &&
                    Rentals.Contains(rental) &&
-                   rental.TerminationNoticeDate is null &&
-                   (rental.EndDate is null ||
-                   rental.EndDate.Value.Date >= DateTime.Today);
+                   !rental.EndDate.HasValue;
         }
 
         private void TerminateRental(object? parameter)

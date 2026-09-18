@@ -111,7 +111,7 @@ public class RentalServiceTests
     }
 
     [TestMethod]
-    public void GetShelfStatus_WhenCurrentRentalHasEndDateButNoNotice_ReturnsRented()
+    public void GetShelfStatus_WhenCurrentRentalHasEndDateButNoNotice_ReturnsTerminationPending()
     {
         // Arrange
         RentalService rentalService = new();
@@ -133,7 +133,7 @@ public class RentalServiceTests
             rentalService.GetShelfStatus(shelf, new DateTime(2026, 10, 15), rentals);
 
         // Assert
-        Assert.AreEqual(ShelfStatus.Rented, status);
+        Assert.AreEqual(ShelfStatus.TerminationPending, status);
     }
 
     [TestMethod]
@@ -223,7 +223,7 @@ public class RentalServiceTests
     }
 
     [TestMethod]
-    public void TerminateRental_WhenOverlappingAnotherRental_ThrowsAndLeavesDatesUnchanged()
+    public void ChangeTerminationEndDate_WhenOverlappingAnotherRental_ThrowsAndLeavesDatesUnchanged()
     {
         RentalService rentalService = new();
         Tenant tenant = new() { TenantId = 1, Name = "Test Tenant" };
@@ -249,7 +249,7 @@ public class RentalServiceTests
 
         // Act & Assert
         Assert.ThrowsExactly<InvalidOperationException>(() =>
-            rentalService.TerminateRental(
+            rentalService.ChangeTerminationEndDate(
                 rental,
                 new DateTime(2026, 9, 18),
                 new DateTime(2026, 10, 31),
