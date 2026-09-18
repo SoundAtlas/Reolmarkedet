@@ -84,7 +84,8 @@
                                         Width="60"
                                         ElementStyle="{StaticResource ManagementCellTextStyle}" />
 
-                    <DataGridTemplateColumn Header="Status" Width="104">
+                    <DataGridTemplateColumn Header="Status"  HeaderStyle="{StaticResource CenteredColumnHeaderStyle}"
+                                            Width="104">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Border x:Name="RentalStatusPill"

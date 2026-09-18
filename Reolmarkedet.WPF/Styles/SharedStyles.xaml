@@ -322,6 +322,12 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
+    <Style x:Key="CenteredColumnHeaderStyle"
+           TargetType="DataGridColumnHeader"
+           BasedOn="{StaticResource ManagementColumnHeaderStyle}">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+
     <Style x:Key="ManagementDataGridStyle" TargetType="DataGrid">
         <Setter Property="Background" Value="#292929" />
         <Setter Property="Foreground" Value="#EEEEEE" />

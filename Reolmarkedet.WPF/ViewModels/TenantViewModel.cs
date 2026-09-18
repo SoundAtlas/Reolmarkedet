@@ -2,6 +2,7 @@
 using Reolmarkedet.Core.Services;
 using Reolmarkedet.WPF.Commands;
 using System.Collections.ObjectModel;
+using System.Net.Mail;
 
 namespace Reolmarkedet.WPF.ViewModels
 {
@@ -263,11 +264,15 @@ namespace Reolmarkedet.WPF.ViewModels
         {
             return SelectedTenant is null;
         }
-        private void AddTenant(object? obj)
+        private void AddTenant(object? parameter)
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
                 ValidationMessage = "Navn må ikke være tomt.";
+                return;
+            }
+            if (!ValidateContactDetails())
+            {
                 return;
             }
 
@@ -307,6 +312,10 @@ namespace Reolmarkedet.WPF.ViewModels
             {
                 ValidationMessage =
                     "Navn må ikke være tomt. Angiv et navn, eller annuller redigeringen.";
+                return;
+            }
+            if (!ValidateContactDetails())
+            {
                 return;
             }
 
@@ -385,6 +394,104 @@ namespace Reolmarkedet.WPF.ViewModels
             }
 
             OnPropertyChanged(nameof(FormTitle));
+        }
+
+        private bool ValidateContactDetails()
+        {
+            string? phoneError = GetPhoneNumberValidationMessage(PhoneNumber);
+
+            if (phoneError is not null)
+            {
+                ValidationMessage = phoneError;
+                return false;
+            }
+
+            string? emailError = GetEmailValidationMessage(Email);
+
+            if (emailError is not null)
+            {
+                ValidationMessage = emailError;
+                return false;
+            }
+
+            return true;
+        }
+
+        private string? GetPhoneNumberValidationMessage(string phoneNumber)
+        {
+            // The field is optional
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+            {
+                return null;
+            }
+
+
+            string cleanedPhoneNumber = phoneNumber
+                    .Replace(" ", "")
+                    .Replace("-", "")
+                    .Replace("(", "")
+                    .Replace(")", "");
+
+            bool isInternational = cleanedPhoneNumber.StartsWith("+");
+
+            string digits = isInternational
+                ? cleanedPhoneNumber.Substring(1)
+                : cleanedPhoneNumber;
+
+            if (digits.Length == 0)
+            {
+                return isInternational
+                    ? "Angiv landekode og telefonnummer efter +."
+                    : "Et dansk telefonnummer uden landekode skal have 8 cifre.";
+            }
+
+            foreach (char character in digits)
+            {
+                if (character < '0' || character > '9')
+                {
+                    return "Telefonnummeret indeholder ugyldige tegn. Brug kun cifre, " +
+                           "mellemrum, bindestreger eller parenteser samt + foran landekoden.";
+                }
+            }
+
+            if (isInternational)
+            {
+                if (digits[0] == '0')
+                {
+                    return "Landekoden efter + må ikke begynde med 0.";
+                }
+
+                if (digits.Length > 15)
+                {
+                    return "Et internationalt telefonnummer må højst have " +
+                           "15 cifre inklusivt landekoden.";
+                }
+            }
+            else if (digits.Length != 8)
+            {
+                return "Et dansk telefonnummer uden landekode skal have 8 cifre.";
+            }
+
+            return null;
+        }
+
+
+        private string? GetEmailValidationMessage(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return null;
+            }
+
+            string cleanedEmail = email.Trim();
+
+            if (!MailAddress.TryCreate(cleanedEmail, out MailAddress? address) ||
+                !address.Address.Equals(cleanedEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                return "Angiv en emailadresse i korrekt format, fx navn@eksempel.dk.";
+            }
+
+            return null;
         }
     }
 }

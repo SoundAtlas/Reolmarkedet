@@ -108,7 +108,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="Status"
+                <DataGridTemplateColumn Header="Status"  HeaderStyle="{StaticResource CenteredColumnHeaderStyle}"
                                         Width="95">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
