@@ -116,9 +116,11 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Lejemål og historik"
+            <TextBlock Grid.Row="0"
+                       Text="Lejemål og historik"
                        FontSize="24"
                        Margin="0,0,0,16" />
 
@@ -162,6 +164,40 @@
                                         Width="120" />
                 </DataGrid.Columns>
             </DataGrid>
+
+            <Border Grid.Row="2"
+                    BorderBrush="LightGray"
+                    BorderThickness="1"
+                    Padding="12"
+                    Margin="0,12,0,0">
+
+                <StackPanel>
+                    <TextBlock Text="Opsig valgt lejemål"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,8" />
+
+                    <TextBlock Text="Sidste lejedag"
+                               Margin="0,0,0,4" />
+
+                    <StackPanel Orientation="Horizontal">
+                        <DatePicker SelectedDate="{Binding TerminationEndDate,
+                                    Mode=TwoWay}"
+                                    Width="180"
+                                    MinHeight="30" />
+
+                        <Button Content="Opsig lejemål"
+                                Command="{Binding TerminateRentalCommand}"
+                                Padding="12,4"
+                                MinHeight="30"
+                                Margin="12,0,0,0" />
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding TerminationMessage}"
+                               Foreground="Red"
+                               TextWrapping="Wrap"
+                               Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
         </Grid>
     </Grid>
 

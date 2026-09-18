@@ -226,11 +226,16 @@ namespace Reolmarkedet.Core.Services
                     "Lejemålet er allerede afsluttet.");
             }
 
-            if (endDate.Date < rental.StartDate.Date
-                || endDate.Date < noticeDate.Date)
+            if (endDate.Date < rental.StartDate.Date)
             {
                 throw new ArgumentException(
-                    "Slutdatoen kan ikke være før startdatoen eller opsigelsesdatoen.");
+                    "Slutdatoen må ikke være før startdatoen.");
+            }
+
+            if (endDate.Date < noticeDate.Date)
+            {
+                throw new ArgumentException(
+                    "Slutdatoen må ikke være i fortiden");
             }
 
             List<Rental> otherRentals = new();
