@@ -182,6 +182,7 @@ namespace Reolmarkedet.WPF.ViewModels
 
                     TerminateRentalCommand.RaiseCanExecuteChanged();
                     ChangeTerminationEndDateCommand.RaiseCanExecuteChanged();
+                    UndoTerminationCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -236,6 +237,7 @@ namespace Reolmarkedet.WPF.ViewModels
         public RelayCommand CreateRentalsCommand { get; }
         public RelayCommand TerminateRentalCommand { get; }
         public RelayCommand ChangeTerminationEndDateCommand { get; }
+        public RelayCommand UndoTerminationCommand { get; }
 
         public RentalViewModel(
             ObservableCollection<Tenant> tenants,
@@ -259,6 +261,8 @@ namespace Reolmarkedet.WPF.ViewModels
                 new RelayCommand(TerminateRental, CanTerminateRental);
             ChangeTerminationEndDateCommand =
                 new RelayCommand(ChangeTerminationEndDate, CanChangeTerminationEndDate);
+            UndoTerminationCommand =
+                new RelayCommand(UndoTermination, CanUndoTermination);
 
             // Subscribe to changes in the SelectedShelves collection to update button availability 
             SelectedShelves.CollectionChanged += (_, _) =>
@@ -272,6 +276,44 @@ namespace Reolmarkedet.WPF.ViewModels
             };
 
             Refresh();
+        }
+
+        private bool CanUndoTermination(object? parameter)
+        {
+            Rental? rental = SelectedRentalRow?.Rental;
+
+            return rental is not null &&
+                   Rentals.Contains(rental) &&
+                   rental.EndDate.HasValue &&
+                   rental.EndDate.Value.Date >= DateTime.Today;
+        }
+
+        private void UndoTermination(object? parameter)
+        {
+            Rental? rental = SelectedRentalRow?.Rental;
+
+            if (rental is null || !Rentals.Contains(rental))
+            {
+                TerminationMessage = "Vælg et gyldigt lejemål at fortryde opsigelsen for.";
+                return;
+            }
+
+            try
+            {
+                _rentalService.UndoTermination(
+                    rental,
+                    DateTime.Today,
+                    Rentals);
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                TerminationMessage = ex.Message;
+                return;
+            }
+
+            Refresh();
+            TerminationMessage = "Lejemålet er ikke længere opsagt.";
         }
 
         private bool CanChangeTerminationEndDate(object? parameter)

@@ -221,6 +221,12 @@
                                 Command="{Binding ChangeTerminationEndDateCommand}"
                                 Padding="12,4"
                                 MinHeight="30"
+                                Margin="0,0,12,8" />
+
+                        <Button Content="Fortryd opsigelse"
+                                Command="{Binding UndoTerminationCommand}"
+                                Padding="12,4"
+                                MinHeight="30"
                                 Margin="0,0,0,8" />
                     </WrapPanel>
 

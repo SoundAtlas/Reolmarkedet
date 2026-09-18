@@ -304,6 +304,45 @@ namespace Reolmarkedet.Core.Services
             rental.EndDate = newEndDate.Date;
         }
 
+        public void UndoTermination(
+            Rental rental,
+            DateTime currentDate,
+            IEnumerable<Rental> existingRentals)
+        {
+            if (!rental.EndDate.HasValue)
+            {
+                throw new InvalidOperationException(
+                    "Lejemålet er ikke opsagt.");
+            }
+            if (rental.EndDate.Value.Date < currentDate.Date)
+            {
+                throw new InvalidOperationException(
+                    "Lejemålet er allerede afsluttet.");
+            }
 
+            List<Rental> otherRentals = new();
+
+            foreach (Rental existingRental in existingRentals)
+            {
+                if (existingRental != rental)
+                {
+                    otherRentals.Add(existingRental);
+                }
+            }
+
+            if (!IsShelfAvailable(
+                rental.Shelf,
+                rental.StartDate,
+                null,
+                otherRentals))
+            {
+                throw new InvalidOperationException(
+                    "Opsigelsen kan ikke fortrydes, da reolen er booket til et andet lejemål.");
+            }
+
+            // all checks pass
+            rental.EndDate = null;
+            rental.TerminationNoticeDate = null;
+        }
     }
 }
