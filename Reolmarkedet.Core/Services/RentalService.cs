@@ -172,5 +172,39 @@ namespace Reolmarkedet.Core.Services
             }
             return false;
         }
+
+        public decimal GetStandardMonthlyRentPerShelf(int shelfCount)
+        {
+            return shelfCount switch
+            {
+                < 0 => throw new ArgumentOutOfRangeException(nameof(shelfCount)),
+                0 => 0m,
+                1 => 850m,
+                2 or 3 => 825m,
+                _ => 800m,
+            };
+        }
+
+        public int GetRentedShelfCountForTenant(
+            Tenant tenant,
+            DateTime date,
+            IEnumerable<Rental> rentals)
+        {
+            int shelfCount = 0;
+
+            foreach (var rental in rentals)
+            {
+                bool sameTenant = rental.Tenant.TenantId == tenant.TenantId;
+                bool hasStarted = rental.StartDate.Date <= date.Date;
+                bool hasNotEnded = rental.EndDate is null ||
+                    rental.EndDate.Value.Date >= date.Date;
+
+                if (sameTenant && hasStarted && hasNotEnded)
+                {
+                    shelfCount++;
+                }
+            }
+            return shelfCount;
+        }
     }
 }

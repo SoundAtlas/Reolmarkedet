@@ -65,13 +65,39 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <TextBlock Text="Aftalt månedlig leje (kr.)" />
+            <TextBlock Text="Aftalt månedlig leje pr. reol (kr.)"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <Button Content="Angiv specialpris"
+                        Command="{Binding EnableCustomPriceCommand}"
+                        Padding="8,4"
+                        Margin="0,0,8,0" />
+
+                <Button Content="Brug standardpris"
+                        Command="{Binding UseStandardPriceCommand}"
+                        Padding="8,4" />
+            </StackPanel>
+
+            <TextBlock Text="Samlet månedlig leje for valgte reoler"
+                       FontWeight="SemiBold" />
+
+            <TextBlock Text="{Binding TotalMonthlyRent,
+                       StringFormat='{}{0:N2} kr.',
+                       TargetNullValue='Ugyldig pris'}"
+                       Margin="0,4,0,12" />
+
             <TextBox Text="{Binding MonthlyRent,
                      Mode=TwoWay,
                      UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding IsCustomPrice}"
                      MinHeight="30"
                      Padding="6,3"
                      Margin="0,4,0,12" />
+
+            <Button Content="Opret lejemål"
+                    Command="{Binding CreateRentalsCommand}"
+                    MinHeight="30"
+                    Margin="0,0,0,12" />
 
             <TextBlock Text="{Binding RentalMessage}"
                        Foreground="Red"
