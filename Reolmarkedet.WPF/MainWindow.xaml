@@ -40,20 +40,72 @@
             <StackPanel Margin="12,20">
 
                 <Button Content="Overblik"
-                        Style="{StaticResource NavigationButtonStyle}"
-                        Command="{Binding ShowDashboardCommand}" />
+                        Command="{Binding ShowDashboardCommand}" >
+
+                    <Button.Style>
+                        <Style TargetType="Button"
+                               BasedOn="{StaticResource NavigationButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActivePage}"
+                                             Value="{x:Static vm:NavigationPage.Dashboard}">
+                                    <Setter Property="Background" Value="#505050" />
+                                    <Setter Property="BorderBrush" Value="#999999" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
                 <Button Content="Reollejere"
-                        Style="{StaticResource NavigationButtonStyle}"
-                        Command="{Binding ShowTenantsCommand}" />
+                        Command="{Binding ShowTenantsCommand}" >
+                    <Button.Style>
+                        <Style TargetType="Button"
+                               BasedOn="{StaticResource NavigationButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActivePage}"
+                                             Value="{x:Static vm:NavigationPage.Tenants}">
+                                    <Setter Property="Background" Value="#505050" />
+                                    <Setter Property="BorderBrush" Value="#999999" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
                 <Button Content="Reoler"
-                        Style="{StaticResource NavigationButtonStyle}"
-                        Command="{Binding ShowShelfManagementCommand}" />
+                        Command="{Binding ShowShelfManagementCommand}" >
+
+                    <Button.Style>
+                        <Style TargetType="Button"
+                               BasedOn="{StaticResource NavigationButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActivePage}"
+                                             Value="{x:Static vm:NavigationPage.Shelves}">
+                                    <Setter Property="Background" Value="#505050" />
+                                    <Setter Property="BorderBrush" Value="#999999" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
                 <Button Content="Lejemål"
-                        Style="{StaticResource NavigationButtonStyle}"
-                        Command="{Binding ShowRentalManagementCommand}" />
+                        Command="{Binding ShowRentalManagementCommand}" >
+
+                    <Button.Style>
+                        <Style TargetType="Button"
+                               BasedOn="{StaticResource NavigationButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActivePage}"
+                                             Value="{x:Static vm:NavigationPage.Rentals}">
+                                    <Setter Property="Background" Value="#505050" />
+                                    <Setter Property="BorderBrush" Value="#999999" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
             </StackPanel>
         </Border>
 

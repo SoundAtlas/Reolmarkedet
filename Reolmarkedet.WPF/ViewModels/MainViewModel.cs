@@ -16,9 +16,20 @@ namespace Reolmarkedet.WPF.ViewModels
                 {
                     _currentViewModel = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(ActivePage));
                 }
             }
         }
+
+        // This property is used to determine which navigation button should be highlighted in the UI.
+        public NavigationPage? ActivePage => CurrentViewModel switch
+        {
+            DashboardViewModel => NavigationPage.Dashboard,
+            TenantViewModel => NavigationPage.Tenants,
+            ShelfViewModel => NavigationPage.Shelves,
+            RentalViewModel => NavigationPage.Rentals,
+            _ => null
+        };
 
         public ObservableCollection<Rental> Rentals { get; } = new();
 
