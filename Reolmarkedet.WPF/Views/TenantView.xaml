@@ -13,60 +13,64 @@
             <ColumnDefinition Width="320" />
         </Grid.ColumnDefinitions>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+                   Text="Reollejere"
+                   FontSize="28" FontWeight="SemiBold"
+                   Margin="0,0,0,24" />
         <!-- List -->
-        <Grid Grid.Column="0">
+
+        <Grid Grid.Row="1" Grid.Column="0"
+              Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Reollejere" FontSize="20" Margin="0,0,0,16" />
-            <Grid Grid.Row="1" Margin="0,0,0,12">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+            <TextBlock Text="Søg efter navn" />
 
-                <TextBlock Text="Søg efter navn" />
+            <TextBox Grid.Row="1"
+                     Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource InputTextBoxStyle}"
+                     Margin="0,4,0,0" />
 
-                <TextBox Grid.Row="1"
-                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource InputTextBoxStyle}"
-                         Margin="0,4,0,0" />
-
-                <CheckBox Grid.Row="1" Grid.Column="1"
-                          Content="Kun deaktiverede"
-                          IsChecked="{Binding ShowInactiveTenants, Mode=TwoWay}"
-                          Style="{StaticResource FilterCheckBoxStyle}"
-                          VerticalAlignment="Center"
-                          Margin="16,4,0,0" />
-            </Grid>
-            <DataGrid Grid.Row="2" ItemsSource="{Binding VisibleTenants}"
-                      SelectedItem="{Binding SelectedTenant, Mode=TwoWay}"
-                      Style="{StaticResource ManagementDataGridStyle}"
-                      AutoGenerateColumns="False" IsReadOnly="True"
-                      CanUserAddRows="False" CanUserDeleteRows="False"
-                      SelectionMode="Single" SelectionUnit="FullRow">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding TenantId}" Width="50"
-                                        ElementStyle="{StaticResource ManagementCellTextStyle}"/>
-                    <DataGridTextColumn Header="Navn" Binding="{Binding Name}" Width="*"
-                                        ElementStyle="{StaticResource ManagementCellTextStyle}"/>
-                    <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="120"
-                                        ElementStyle="{StaticResource ManagementCellTextStyle}"/>
-                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"
-                                        ElementStyle="{StaticResource ManagementCellTextStyle}"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <CheckBox Grid.Row="1" Grid.Column="1"
+                      Content="Kun deaktiverede"
+                      IsChecked="{Binding ShowInactiveTenants, Mode=TwoWay}"
+                      Style="{StaticResource FilterCheckBoxStyle}"
+                      VerticalAlignment="Center"
+                      Margin="16,4,0,0" />
         </Grid>
+        <DataGrid Grid.Row="2" Grid.Column="0" ItemsSource="{Binding VisibleTenants}"
+                  SelectedItem="{Binding SelectedTenant, Mode=TwoWay}"
+                  Style="{StaticResource ManagementDataGridStyle}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  CanUserAddRows="False" CanUserDeleteRows="False"
+                  SelectionMode="Single" SelectionUnit="FullRow">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding TenantId}" Width="50"
+                                    ElementStyle="{StaticResource ManagementCellTextStyle}"/>
+                <DataGridTextColumn Header="Navn" Binding="{Binding Name}" Width="*"
+                                    ElementStyle="{StaticResource ManagementCellTextStyle}"/>
+                <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="120"
+                                    ElementStyle="{StaticResource ManagementCellTextStyle}"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"
+                                    ElementStyle="{StaticResource ManagementCellTextStyle}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
 
         <!-- Form -->
-        <Border Grid.Column="2"
+        <Border Grid.Column="2" Grid.Row="2"
                 Background="#292929"
                 BorderBrush="#595959"
                 BorderThickness="1"
@@ -109,49 +113,57 @@
                     <StackPanel Orientation="Horizontal">
 
                         <Button Content="Opret" Command="{Binding AddTenantCommand}"
-                                Margin="0,0,6,0"
-                                Style="{StaticResource ActionButtonStyle}"
+                                Margin="0,0,8,0"
+                                Style="{StaticResource PrimaryButtonStyle}"
                                 Visibility="{Binding ShowCreateButton,
                                 Converter={StaticResource BoolToVisibility}}"/>
 
                         <Button Content="Opdater" Command="{Binding UpdateTenantCommand}"
-                                Margin="0,0,6,0"
-                                Style="{StaticResource ActionButtonStyle}"
+                                Margin="0,0,8,0"
+                                Style="{StaticResource PrimaryButtonStyle}"
                                 Visibility="{Binding IsEditing,
                                 Converter={StaticResource BoolToVisibility}}"/>
 
                         <Button Content="Annuller" Command="{Binding CancelUpdateTenantCommand}"
-                                Margin="0,0,6,0"
-                                Style="{StaticResource ActionButtonStyle}"
-                                Visibility="{Binding IsEditing,
-                                Converter={StaticResource BoolToVisibility}}"/>
-
-                        <Button Content="Slet" Command="{Binding DeleteTenantCommand}"
+                                Margin="0,0,8,0"
                                 Style="{StaticResource ActionButtonStyle}"
                                 Visibility="{Binding IsEditing,
                                 Converter={StaticResource BoolToVisibility}}"/>
 
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="Deaktiver lejer"
-                                Command="{Binding DeactivateTenantCommand}"
-                                HorizontalAlignment="Left"
-                                Margin="0,8,6,0"
-                                Style="{StaticResource ActionButtonStyle}"
-                                Visibility="{Binding ShowDeactivateButton,
-                                Converter={StaticResource BoolToVisibility}}"/>
+                    <Border BorderBrush="#595959"
+                            BorderThickness="0,1,0,0"
+                            Margin="0,16,0,0"
+                            Padding="0,12,0,0"
+                            Visibility="{Binding IsEditing,
+                            Converter={StaticResource BoolToVisibility}}">
+                        <WrapPanel>
+                            <Button Content="Slet" Command="{Binding DeleteTenantCommand}"
+                                    Margin="0,0,8,0"
+                                    Style="{StaticResource WarningButtonStyle}"
+                                    Visibility="{Binding IsEditing,
+                                    Converter={StaticResource BoolToVisibility}}"/>
 
-                        <Button Content="Reaktiver lejer"
-                                Command="{Binding ReactivateTenantCommand}"
-                                HorizontalAlignment="Left"
-                                Margin="0,8,0,0"
-                                Style="{StaticResource ActionButtonStyle}"
-                                Visibility="{Binding ShowReactivateButton,
-                                Converter={StaticResource BoolToVisibility}}"/>
-                    </StackPanel>
+                            <Button Content="Deaktiver lejer"
+                                    Command="{Binding DeactivateTenantCommand}"
+                                    HorizontalAlignment="Left"
+                                    Margin="0,0,8,0"
+                                    Style="{StaticResource WarningButtonStyle}"
+                                    Visibility="{Binding ShowDeactivateButton,
+                                    Converter={StaticResource BoolToVisibility}}"/>
 
-                    <TextBlock Text="{Binding ValidationMessage}" Foreground="Firebrick"
+                            <Button Content="Reaktiver lejer"
+                                    Command="{Binding ReactivateTenantCommand}"
+                                    HorizontalAlignment="Left"
+                                    Margin="0,0,8,0"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Visibility="{Binding ShowReactivateButton,
+                                    Converter={StaticResource BoolToVisibility}}"/>
+                        </WrapPanel>
+                    </Border>
+
+                    <TextBlock Text="{Binding ValidationMessage}" Foreground="#F28B82"
                                TextWrapping="Wrap" Margin="0,12,0,0" />
                 </StackPanel>
 

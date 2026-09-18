@@ -39,7 +39,7 @@
 
             <StackPanel Margin="12,20">
 
-                <Button Content="Overblik"
+                <Button Content="Startside"
                         Command="{Binding ShowDashboardCommand}" >
 
                     <Button.Style>
