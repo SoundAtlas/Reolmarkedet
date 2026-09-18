@@ -207,6 +207,23 @@ namespace Reolmarkedet.WPF.ViewModels
 
             RentalMessage = string.Empty;
 
+            // Handles case: A shelf is selected, then the date is changed, and the shelf is no longer available. It should be removed from the selection.
+            for (int i = SelectedShelves.Count - 1; i >= 0; i--)
+            {
+                Shelf shelf = SelectedShelves[i];
+
+                bool isAvailable = Shelves.Contains(shelf) &&
+                    _rentalService.IsShelfAvailable(
+                        shelf, StartDate.Value, EndDate, Rentals);
+
+                if (!isAvailable)
+                {
+                    SelectedShelves.RemoveAt(i);
+                    RentalMessage =
+                        "En eller flere valgte reoler blev fjernet, da de ikke længere er tilgængelige.";
+                }
+            }
+
             foreach (var shelf in Shelves)
             {
                 bool isAvailable = _rentalService.IsShelfAvailable(
