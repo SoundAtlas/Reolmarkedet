@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 
-namespace Reolmarkedet.WPF.Views
+namespace Reolmarkedet.WPF.ViewModels
 {
     public class ViewModelBase : INotifyPropertyChanged
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Reolmarkedet.WPF.Commands
 {
@@ -20,7 +17,7 @@ namespace Reolmarkedet.WPF.Commands
 
         public bool CanExecute(object? parameter)
         {
-            return _canExecute == null || _canExecute(parameter);
+            return _canExecute is null || _canExecute(parameter);
         }
 
         public void Execute(object? parameter)

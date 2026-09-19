@@ -1,10 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Reolmarkedet.Core.Models
+﻿namespace Reolmarkedet.Core.Models
 {
     public class Rental
     {
+        public int RentalId { get; set; }
+        public Tenant Tenant { get; set; }
+        public Shelf Shelf { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public DateTime? TerminationNoticeDate { get; set; }
+        public decimal MonthlyRent { get; set; }
+
+        public Rental(Tenant tenant, Shelf shelf)
+        {
+            Tenant = tenant;
+            Shelf = shelf;
+        }
     }
 }
